@@ -1,0 +1,32 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-primary">
+  <div class="container-fluid">
+    <span class="navbar-brand mb-0 h1 text-white">Batiment</span>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link text-white" aria-current="page" routerLink="/home" routerLinkActive="active">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white" routerLink="/sensors" routerLinkActive="active">Sensors</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white" routerLink="/automation" routerLinkActive="active">Automation</a>
+        </li>
+      </ul>
+    </div>
+    <div class="dropdown ml-auto">
+      <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+        Select Building
+      </button>
+      <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        <li><a class="dropdown-item" (click)="onSelectBuilding('Batiment A'); ">Batiment A</a></li>
+        <li><a class="dropdown-item" (click)="onSelectBuilding('Batiment B'); ">Batiment B</a></li>
+        <li><a class="dropdown-item" (click)="onSelectBuilding('Batiment C'); ">Batiment C</a></li>
+      </ul>
+    </div>
+    <span class="navbar-text text-white mx-3">{{ SelectedBuilding }}</span>
+  </div>
+</nav>
+<router-outlet></router-outlet>
+
+<router-outlet></router-outlet>

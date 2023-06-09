@@ -1,0 +1,19 @@
+
+  <div class="container mt-3" >
+    <div class="row">
+      <ng-container *ngFor="let location of locations">
+        <div class="col-lg-3" (click)="viewSensors(location.name)" *ngIf="location.building === selectedBuilding">
+          <div class="card my-4">
+            <div class="card-header">
+              {{location.name}}
+            </div>
+            <div class="card-body">
+              <h5 class="card-title">{{location.building}}</h5>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+  
+  
