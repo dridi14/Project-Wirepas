@@ -1,0 +1,18 @@
+<div class="container mt-3">
+  <h2>{{ room }}</h2>
+  <div class="row">
+    <div class="col-lg-3" *ngFor="let sensor of roomSensors; let i = index">
+      <div class="card my-4">
+        <div class="card-header">
+          {{ sensor.name }}
+          <span class="status-dot" [ngStyle]="{'background-color': getSensorStatus(sensor.status)}"></span>
+        </div>
+        <div class="card-body">
+          <h5 class="card-title">{{ sensor.type }}</h5>
+          <p class="card-text">{{ sensor.location }}</p>
+          <canvas #chartCanvas></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
