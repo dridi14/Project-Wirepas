@@ -63,18 +63,21 @@ export class SensorsComponent implements OnInit, AfterViewInit {
    }
 
    @ViewChildren('chartCanvas') chartCanvases!: QueryList<ElementRef>;
-   
+
   ngOnInit() {
+    this.route.paramMap.subscribe(params => {
+    this.room = params.get('room');
     if (this.room) {
       this.roomSensors = this.sensors.filter(sensor => sensor.location === this.room);
     } else {
       this.roomSensors = this.sensors;
     }
-    
+  
     this.roomSensors.forEach(sensor => {
       const randomData = this.generateChartData(sensor);
       sensor.data = randomData;
     });
+  });
     
   }
 

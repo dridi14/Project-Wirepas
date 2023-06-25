@@ -62,9 +62,10 @@ export class HomeComponent implements OnInit {
     
      }
   
-    viewSensors(room: string) {
+     viewSensors(room: string) {
       this.router.navigate(['/sensors', room]);
     }
+    
   
     getRoomStatus(room: string): string {
       const roomSensors = this.sensors.filter(sensor => sensor.location === room);
