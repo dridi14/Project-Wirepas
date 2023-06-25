@@ -14,19 +14,12 @@
         </li>
       </ul>
     </div>
-    <div class="dropdown ml-auto">
-      <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-        Select Building
-      </button>
-      <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-        <li><a class="dropdown-item" (click)="onSelectBuilding('Batiment A'); ">Batiment A</a></li>
-        <li><a class="dropdown-item" (click)="onSelectBuilding('Batiment B'); ">Batiment B</a></li>
-        <li><a class="dropdown-item" (click)="onSelectBuilding('Batiment C'); ">Batiment C</a></li>
-      </ul>
-    </div>
-    <span class="navbar-text text-white mx-3">{{ SelectedBuilding }}</span>
+    
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item" *ngIf="isLoggedIn">
+        <a class="nav-link text-white" (click)="logout()">Logout</a>
+      </li>
+    </ul>
   </div>
 </nav>
-<router-outlet></router-outlet>
-
 <router-outlet></router-outlet>

@@ -1,19 +1,16 @@
-
-  <div class="container mt-3" >
-    <div class="row">
-      <ng-container *ngFor="let location of locations">
-        <div class="col-lg-3" (click)="viewSensors(location.name)" *ngIf="location.building === selectedBuilding">
-          <div class="card my-4">
-            <div class="card-header">
-              {{location.name}}
-            </div>
-            <div class="card-body">
-              <h5 class="card-title">{{location.building}}</h5>
-            </div>
-          </div>
+<div class="container mt-3">
+  <div class="row">
+    <div class="col-lg-3" *ngFor="let location of locations">
+      <div class="card my-4" (click)="viewSensors(location.name)" >
+        <div class="card-header">
+          {{ location.name }}
+          <span class="status-dot" [ngStyle]="{'background-color': getRoomStatus(location.name)}"></span>
         </div>
-      </ng-container>
+        <div class="card-body">
+          <p class="card-text">Number of Sensors: {{ getSensorCount(location.name) }}</p>
+          <p class="card-text">Sensors: {{ getSensorTypes(location.name) }}</p>
+        </div>
+      </div>
     </div>
   </div>
-  
-  
+</div>

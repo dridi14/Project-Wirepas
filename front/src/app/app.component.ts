@@ -1,21 +1,31 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { BuildingService } from './building.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
+export class AppComponent implements  OnDestroy {
   title = 'front';
+  selectedBuilding = 'Bâtiment A';
+  private buildingSub!: Subscription; // This is used to track our subscription
 
   constructor(  private buildingService: BuildingService ) { }
 
-
-  onSelectBuilding(building: string): void {
-    this.buildingService.changeBuilding(building);
+  ngOnInit(): void {
+    
   }
+
   ngOnDestroy(): void {
-    this.buildingSub.unsubscribe();  // Don't forget to unsubscribe
+   
+  }
+
+  isLoggedIn = true; // Set to true when the user is logged in
+
+  logout(): void {
+    // Implement logout functionality here
+    // Reset the user session and redirect to the login page
   }
 }
