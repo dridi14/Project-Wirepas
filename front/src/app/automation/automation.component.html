@@ -1,27 +1,47 @@
 <div class="container">
-    <mat-card class="card">
-      <mat-card-content>
-        <form [formGroup]="automationForm" (ngSubmit)="submitForm()">
-            <mat-form-field appearance="fill" class="m-1">
-                <mat-label>Select Automation</mat-label>
-                <mat-select formControlName="automation">
-                  <mat-option *ngFor="let automation of automations" [value]="automation.name">{{ automation.name }}</mat-option>
-                </mat-select>
-                <mat-error *ngIf="automationForm.get('automation')?.touched && automationForm.get('automation')?.errors?.required">
-                  Automation selection is required.
-                </mat-error>
-              </mat-form-field>
-  
-          <mat-form-field appearance="fill" class="m-1">
-            <mat-label>Select Sensor</mat-label>
-            <mat-select formControlName="sensor">
-              <mat-option *ngFor="let sensor of sensors" [value]="sensor.name">{{ sensor.name }}</mat-option>
-            </mat-select>
-            <mat-error *ngIf="automationForm.get('sensor')?.touched && automationForm.get('sensor')?.errors?.required">
-              Sensor selection is required.
-            </mat-error>
-          </mat-form-field>
-  
+  <mat-card class="card">
+    <mat-card-content>
+      <form [formGroup]="automationForm" (ngSubmit)="submitForm()">
+        <mat-form-field appearance="fill" class="m-1">
+          <mat-label>Select Automation</mat-label>
+          <mat-select formControlName="automation">
+            <mat-option *ngFor="let automation of automations" [value]="automation.name">{{ automation.name }}
+            </mat-option>
+          </mat-select>
+          <mat-error
+            *ngIf="automationForm.get('automation')?.touched && automationForm.get('automation')?.errors?.required">
+            Automation selection is required.
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="m-1">
+          <mat-label>Select Room</mat-label>
+          <mat-select formControlName="room" (selectionChange)="onRoomSelectionChange($event.value)">
+            <mat-option>None</mat-option>
+            <mat-option *ngFor="let location of locations" [value]="location.name">{{ location.name }}</mat-option>
+          </mat-select>
+          <mat-error *ngIf="automationForm.get('room')?.touched && automationForm.get('room')?.errors?.required">
+            Room selection is required.
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="m-1">
+          <mat-label>Select Sensor</mat-label>
+          <mat-select formControlName="sensor">
+            <mat-option *ngFor="let sensor of filteredSensors" [value]="sensor.name">{{ sensor.name }}</mat-option>
+          </mat-select>
+          <mat-error *ngIf="automationForm.get('sensor')?.touched && automationForm.get('sensor')?.errors?.required">
+            Sensor selection is required.
+          </mat-error>
+        </mat-form-field>
+
+        <div class="radio-container m-1">
+          <span class="choose-automation-text m-2 ">Choose to automate</span>
+          <mat-radio-group formControlName="automationType">
+            <mat-radio-button value="more" class=" m-1">More than</mat-radio-button>
+            <mat-radio-button value="less" class=" m-1">Less than</mat-radio-button>
+          </mat-radio-group>
+
           <mat-form-field appearance="fill" class="m-1">
             <mat-label>Value</mat-label>
             <input matInput formControlName="value">
@@ -29,14 +49,13 @@
               Value is required.
             </mat-error>
           </mat-form-field>
-  
-          <!-- Add fields for trigger condition and actions -->
-  
-          <div class="button-container">
-            <button mat-raised-button type="submit">Create Automation</button>
-          </div>
-        </form>
-      </mat-card-content>
-    </mat-card>
-  </div>
-  
+
+        </div>
+
+        <div class="button-container">
+          <button mat-raised-button type="submit">Create Automation</button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

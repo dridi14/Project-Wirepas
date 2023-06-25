@@ -18,6 +18,12 @@ interface Automation {
   activation: string;
 }
 
+interface LocationData {
+  name: string;
+  building: string;
+}
+
+
 
 @Component({
   selector: 'app-automation',
@@ -58,12 +64,31 @@ export class AutomationComponent implements OnInit {
       { name: 'Capteur de luminosité 5', location: 'Cuisine', type: 'luminosité', status: true, data: [] },
       { name: 'Capteur de CO2 3', location: 'BDE', type: 'CO2', status: true, data: [] }
   ]
-      automations: Automation[] = [
-        { name: 'Automation 1', type: 'Type 1', status: true, activation: 'Temperature'},
-        { name: 'Automation 2', type: 'Type 2', status: false, activation: 'Humidity' },
-        { name: 'Automation 3', type: 'Type 3', status: true, activation: 'Motion'},
-        
-  ]; 
+  automations: Automation[] = [
+    { name: 'Temperature Control', type: 'Climate', status: true, activation: 'Temperature' },
+    { name: 'Lighting Automation', type: 'Lighting', status: false, activation: 'Occupancy' },
+    { name: 'Security Automation', type: 'Security', status: true, activation: 'Motion' },
+    { name: 'Irrigation Automation', type: 'Irrigation', status: true, activation: 'Soil Moisture' },
+    { name: 'Energy Optimization', type: 'Energy', status: false, activation: 'Time of Day' },
+    { name: 'Smart Locks', type: 'Security', status: true, activation: 'Proximity' },
+    { name: 'Voice Assistant Integration', type: 'Smart Home', status: true, activation: 'Voice Commands' },
+    { name: 'Entertainment Automation', type: 'Entertainment', status: false, activation: 'User Preferences' },
+  ];
+  
+
+  locations: LocationData[] = [
+    { name: 'Cantine', building: 'Bâtiment A' },
+    { name: 'Classe1', building: 'Bâtiment A' },
+    { name: 'Classe2', building: 'Bâtiment A' },
+    { name: 'Salle de bains', building: 'Bâtiment A' },
+    { name: 'Cave', building: 'Bâtiment A' },
+    { name: 'Bureau', building: 'Bâtiment A' },
+    { name: 'Classe3', building: 'Bâtiment A' },
+    { name: 'Hall d\'entrée', building: 'Bâtiment A' },
+    { name: 'Toit', building: 'Bâtiment A' },
+    { name: 'Classe4', building: 'Bâtiment A' },
+  ];
+  filteredSensors: Sensor[] = [];
 
   constructor(private formBuilder: FormBuilder) {
     this.automationForm = this.formBuilder.group({
@@ -71,6 +96,8 @@ export class AutomationComponent implements OnInit {
       sensor: ['', Validators.required],
       value: ['', Validators.required] ,
       automation: ['', Validators.required],
+      automationType: ['more', Validators.required],
+      room: [''] // Room selection field
       // Add other form controls here
     });
   }
@@ -85,8 +112,19 @@ export class AutomationComponent implements OnInit {
       name: ['', Validators.required],
     sensor: ['', Validators.required],
     value: ['', Validators.required] ,
-    automation: ['', Validators.required]
+    automation: ['', Validators.required],
+    automationType: ['more', Validators.required], 
+    room: [''] // Room selection field
     });
+  }
+
+  onRoomSelectionChange(selectedRoom: string): void {
+    if (selectedRoom) {
+      this.filteredSensors = this.sensors.filter(sensor => sensor.location === selectedRoom);
+    } else {
+      this.filteredSensors = this.sensors;
+    }
+    this.automationForm.get('sensor')?.setValue(''); // Reset sensor selection when room changes
   }
 
   submitForm(): void {
@@ -118,6 +156,8 @@ export class AutomationComponent implements OnInit {
       });
     }
   }
+
+  
   
 
 }
