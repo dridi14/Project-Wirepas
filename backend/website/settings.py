@@ -92,8 +92,8 @@ WSGI_APPLICATION = 'website.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'auth',
-        'USER': 'auth',
+        'NAME': 'wirepass',
+        'USER': 'wirepass',
         'PASSWORD': 'admin',
         'HOST': 'localhost',
         'PORT': '5432',
