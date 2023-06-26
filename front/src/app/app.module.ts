@@ -21,6 +21,8 @@ import { HomeComponent } from './home/home.component';
 import { SensorsComponent } from './sensors/sensors.component';
 import { AutomationComponent } from './automation/automation.component';
 import { LoginComponent } from './login/login.component';
+import { SignupComponent } from './signup/signup.component';
+import { HttpClientModule } from '@angular/common/http';
 
 
 @NgModule({
@@ -29,7 +31,8 @@ import { LoginComponent } from './login/login.component';
     HomeComponent,
     SensorsComponent,
     AutomationComponent,
-    LoginComponent
+    LoginComponent,
+    SignupComponent
   ],
   imports: [
     BrowserModule,
@@ -46,7 +49,8 @@ import { LoginComponent } from './login/login.component';
     MatInputModule,
     MatSelectModule,
     MatButtonModule,
-    MatRadioModule
+    MatRadioModule,
+    HttpClientModule
   
     
 

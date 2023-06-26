@@ -1,5 +1,3 @@
-from .models import student
-from .serializers import UserSerializer
 from .serializers import UserSerializer
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
@@ -17,12 +15,3 @@ class CreateUserView(APIView):
             user = serializer.save()
             return Response({'message': 'User created successfully'}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-@login_required
-def home(request):
-    obj = student.objects.all()
-    context = {
-        'objs': obj
-    }
-    return render(request, 'main/home.html', context)
-
