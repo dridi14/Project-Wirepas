@@ -1,27 +1,35 @@
 from django.db import models
 
-class User(models.Model):
-    name = models.CharField(max_length=255)
-    email = models.EmailField(max_length=255, unique=True)
+class Room(models.Model):
+    name = models.CharField(max_length=255) # Room name
 
 class Sensor(models.Model):
-    name = models.CharField(max_length=255)
-    type = models.CharField(max_length=255)
-    users = models.ManyToManyField(User, related_name='sensors')
+    SENSOR_TYPES = (
+        ('127', 'Accelerometer'),
+        ('115', 'Movement'),
+        ('136', 'Water Leak'),
+        ('112', 'Temperature'),
+        ('114', 'Humidity'),
+        ('116', 'Atmospheric Pressure'),
+        ('118', 'Brightness'),
+        ('119', 'Noise Level'),
+        ('124', 'Shock Detection'),
+        ('125', 'Button Pressed'),
+        ('128', 'Current Measurement'),
+        ('131', 'CO2 Measurement'),
+        ('184', 'Smoke Detection (Gas)'),
+        # Add more if needed
+    )
 
-class Room(models.Model):
-    name = models.CharField(max_length=255)
-    location = models.CharField(max_length=255)
-    sensors = models.ManyToManyField(Sensor, related_name='rooms')
+    sensor_id = models.CharField(max_length=10, null=True)
+    sensor_type = models.CharField(max_length=200, null=True)
+    room = models.ForeignKey(Room, on_delete=models.CASCADE, null=True)
 
-class Payload(models.Model):
-    timestamp = models.DateTimeField()
-    value = models.CharField(max_length=255)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='payloads')
-    sensor = models.ForeignKey(Sensor, on_delete=models.CASCADE, related_name='payloads')
+class student(models.Model):
+    name = models.CharField(max_length=50)
+    roll = models.IntegerField()
+    des = models.TextField()
 
-class Action(models.Model):
-    name = models.CharField(max_length=255)
-    description = models.CharField(max_length=255)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='actions')
-    payload = models.ForeignKey(Payload, on_delete=models.CASCADE, related_name='actions')
+    def __str__(self):
+        return self.name
+        
