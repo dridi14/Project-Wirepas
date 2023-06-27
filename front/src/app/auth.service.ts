@@ -6,16 +6,22 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class AuthService {
+  private accessTokenKey = 'accessToken';
 
-  constructor(private http: HttpClient, ) {}
+  constructor(private http: HttpClient) {}
 
-  login(username: string, password: string): Observable<any> {
-    return this.http.post('/api/auth/login', {
-      username: username,
-      password: password
-    });
-     
+
+  setAccessToken(token: string): void {
+    localStorage.setItem(this.accessTokenKey, token);
+  }
+
+  getAccessToken(): string | null {
+    return localStorage.getItem(this.accessTokenKey);
+    
+  }
+
+  removeAccessToken(): void {
+    localStorage.removeItem(this.accessTokenKey);
   }
 }
-
 

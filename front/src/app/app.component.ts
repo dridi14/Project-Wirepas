@@ -1,31 +1,37 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BuildingService } from './building.service';
+import { Component, OnDestroy, OnInit, ChangeDetectorRef  } from '@angular/core';
 import { Subscription } from 'rxjs';
+import { AuthService } from './auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements  OnDestroy {
+export class AppComponent implements OnInit, OnDestroy {
   title = 'front';
-  selectedBuilding = 'Bâtiment A';
-  private buildingSub!: Subscription; // This is used to track our subscription
+  isLoggedIn = false; // Set to true when the user is logged in
+  private subscription: Subscription | undefined;
 
-  constructor(  private buildingService: BuildingService ) { }
+  constructor(private authService: AuthService, private router: Router,
+    private changeDetectorRef: ChangeDetectorRef) { }
 
-  ngOnInit(): void {
-    
-  }
-
+  ngOnInit(): void {}
+  
   ngOnDestroy(): void {
-   
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
-
-  isLoggedIn = true; // Set to true when the user is logged in
 
   logout(): void {
-    // Implement logout functionality here
-    // Reset the user session and redirect to the login page
+    // Perform logout actions (e.g., clear tokens, session data, etc.)
+    this.authService.removeAccessToken();
+    this.router.navigate(['/login']);
+    // Optionally, you can clear any other user-related data or perform additional actions
   }
+
+  isLogged(): any {
+    return (this.router.url !== '/login');
+}
 }

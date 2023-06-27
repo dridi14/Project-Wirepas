@@ -23,6 +23,8 @@ import { AutomationComponent } from './automation/automation.component';
 import { LoginComponent } from './login/login.component';
 import { SignupComponent } from './signup/signup.component';
 import { HttpClientModule } from '@angular/common/http';
+import { AuthenticatedGuard } from './auth.guard';
+import { SensorDetailComponent } from './sensor-detail-component/sensor-detail-component.component';
 
 
 @NgModule({
@@ -32,7 +34,8 @@ import { HttpClientModule } from '@angular/common/http';
     SensorsComponent,
     AutomationComponent,
     LoginComponent,
-    SignupComponent
+    SignupComponent,
+    SensorDetailComponent
   ],
   imports: [
     BrowserModule,
@@ -55,7 +58,7 @@ import { HttpClientModule } from '@angular/common/http';
     
 
   ],
-  providers: [],
+  providers: [AuthenticatedGuard],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

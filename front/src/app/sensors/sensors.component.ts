@@ -3,6 +3,7 @@ import { Component, OnInit,  } from '@angular/core';
 import { AfterViewInit, ElementRef, ViewChild , QueryList, ViewChildren } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Chart, ChartConfiguration, ChartScales } from 'chart.js';
+import { Router } from '@angular/router';
 
 
 
@@ -58,7 +59,7 @@ export class SensorsComponent implements OnInit, AfterViewInit {
     
   roomSensors: Sensor[] = [];
 
-  constructor(private route: ActivatedRoute, ) {
+  constructor(private route: ActivatedRoute, private router: Router ) {
   
    }
 
@@ -140,5 +141,8 @@ export class SensorsComponent implements OnInit, AfterViewInit {
     return data;
   }
   
+  navigateToSensorDetail(sensor: Sensor) {
+    this.router.navigate(['/sensor-detail', sensor.name]); // Navigate to the SensorDetailComponent with the sensor name as a parameter
+  }
   
 }

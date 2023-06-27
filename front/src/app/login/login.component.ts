@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { AuthService } from '../auth.service';
 
 @Component({
   selector: 'app-login',
@@ -13,7 +15,12 @@ export class LoginComponent implements OnInit {
   loginError: string = '';
   loginSuccess: boolean = false;
 
-  constructor(private formBuilder: FormBuilder, private http: HttpClient) {
+  constructor(
+    private formBuilder: FormBuilder,
+    private http: HttpClient,
+    private router: Router,
+    private authService: AuthService
+  ) {
     this.loginForm = this.formBuilder.group({
       username: ['', Validators.required],
       password: ['', Validators.required]
@@ -35,21 +42,26 @@ export class LoginComponent implements OnInit {
       const loginData = { username, password };
 
       this.http.post('accounts/login/', loginData).subscribe(
-        (response) => {
-          this.loginSuccess = true;
-          this.loginError = '';
-          console.log('Login success:', response);
-          // Reset form after successful submission
-          this.loginForm.reset();
-        },
-        (error: HttpErrorResponse) => {
-          this.loginSuccess = false;
-          if (error.status === 401) {
-            this.loginError = 'Invalid username or password.';
-          } else {
-            this.loginError = 'An error occurred. Please try again later.';
+        {
+          next: (response: any) => {
+              this.loginSuccess = true;
+              this.loginError = '';
+              console.log('Login success:', response);
+              // Reset form after successful submission
+              this.loginForm.reset();
+              this.authService.setAccessToken(response.access)
+              // Redirect to the home page
+              this.router.navigate(['/home']);
+            },
+          error: (error: HttpErrorResponse) => {
+              this.loginSuccess = false;
+              if (error.status === 401) {
+                this.loginError = 'Invalid username or password.';
+              } else {
+                this.loginError = 'An error occurred. Please try again later.';
+              }
+              console.error('Login error:', error);
           }
-          console.error('Login error:', error);
         }
       );
     } else {
