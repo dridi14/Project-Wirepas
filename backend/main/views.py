@@ -1,4 +1,3 @@
-from .models import student
 from .serializers import UserSerializer
 from .serializers import UserSerializer
 from django.contrib.auth.decorators import login_required
@@ -8,6 +7,8 @@ from rest_framework import generics
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from .models import Room, Sensor, SensorData
+from .serializers import RoomSerializer, SensorSerializer, SensorDataSerializer
 
 
 class CreateUserView(APIView):
@@ -18,11 +19,26 @@ class CreateUserView(APIView):
             return Response({'message': 'User created successfully'}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@login_required
-def home(request):
-    obj = student.objects.all()
-    context = {
-        'objs': obj
-    }
-    return render(request, 'main/home.html', context)
+class RoomListCreate(generics.ListCreateAPIView):
+    queryset = Room.objects.all()
+    serializer_class = RoomSerializer
 
+class RoomRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Room.objects.all()
+    serializer_class = RoomSerializer
+
+class SensorListCreate(generics.ListCreateAPIView):
+    queryset = Sensor.objects.all()
+    serializer_class = SensorSerializer
+
+class SensorRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Sensor.objects.all()
+    serializer_class = SensorSerializer
+
+class SensorDataListCreate(generics.ListCreateAPIView):
+    queryset = SensorData.objects.all()
+    serializer_class = SensorDataSerializer
+
+class SensorDataRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
+    queryset = SensorData.objects.all()
+    serializer_class = SensorDataSerializer
