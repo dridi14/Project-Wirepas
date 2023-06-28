@@ -28,6 +28,7 @@ class Sensor(models.Model):
 
 class SensorData(models.Model):
     sensor = models.ForeignKey(Sensor, on_delete=models.CASCADE)
+    is_active = models.BooleanField(default=True)  # Indicates if sensor is active or not
     sink_id = models.CharField(max_length=50) 
     source_address = models.BigIntegerField()
     tx_time_ms_epoch = models.BigIntegerField()
