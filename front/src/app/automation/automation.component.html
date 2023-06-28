@@ -5,11 +5,9 @@
         <mat-form-field appearance="fill" class="m-1">
           <mat-label>Select Automation</mat-label>
           <mat-select formControlName="automation">
-            <mat-option *ngFor="let automation of automations" [value]="automation.name">{{ automation.name }}
-            </mat-option>
+            <mat-option *ngFor="let automation of automations" [value]="automation.name">{{ automation.name }}</mat-option>
           </mat-select>
-          <mat-error
-            *ngIf="automationForm.get('automation')?.touched && automationForm.get('automation')?.errors?.required">
+          <mat-error *ngIf="automationForm.get('automation')?.touched && automationForm.get('automation')?.errors?.required">
             Automation selection is required.
           </mat-error>
         </mat-form-field>
@@ -38,8 +36,8 @@
         <div class="radio-container m-1">
           <span class="choose-automation-text m-2 ">Choose to automate</span>
           <mat-radio-group formControlName="automationType">
-            <mat-radio-button value="more" class=" m-1">More than</mat-radio-button>
-            <mat-radio-button value="less" class=" m-1">Less than</mat-radio-button>
+            <mat-radio-button value="more" class="m-1">More than</mat-radio-button>
+            <mat-radio-button value="less" class="m-1">Less than</mat-radio-button>
           </mat-radio-group>
 
           <mat-form-field appearance="fill" class="m-1">
@@ -50,6 +48,31 @@
             </mat-error>
           </mat-form-field>
 
+          <mat-form-field appearance="fill" class="m-1">
+            <mat-label>Second Value</mat-label>
+            <input matInput formControlName="secondValue">
+            <mat-error *ngIf="automationForm.get('secondValue')?.touched && automationForm.get('secondValue')?.errors?.required">
+              Second Value is required.
+            </mat-error>
+          </mat-form-field>
+
+
+          <div class="time-range-container">
+            <div class="timepicker-wrapper">
+              <label class="timepicker-label">Activation</label>
+              <input [ngxTimepicker]="picker1" class="timepicker-input" placeholder="Choose Activation Time">
+              <ngx-material-timepicker #picker1></ngx-material-timepicker>
+            </div>
+            <div class="timepicker-wrapper">
+              <label class="timepicker-label">Deactivation</label>
+              <input [ngxTimepicker]="picker2" class="timepicker-input" placeholder="Choose Deactivation Time">
+              <ngx-material-timepicker #picker2></ngx-material-timepicker>
+            </div>
+          </div>
+          
+          
+    
+
         </div>
 
         <div class="button-container">
@@ -59,4 +82,4 @@
     </mat-card-content>
   </mat-card>
 </div>
-add a second value to create a range and a time value to create a time range
+ 

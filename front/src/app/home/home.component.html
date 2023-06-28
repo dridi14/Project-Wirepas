@@ -7,8 +7,8 @@
           <span class="status-dot" [ngStyle]="{'background-color': getRoomStatus(location.name)}"></span>
         </div>
         <div class="card-body">
-          <p class="card-text">Number of Sensors: {{ getSensorCount(location.name) }}</p>
-          <p class="card-text">Sensors: {{ getSensorTypes(location.name) }}</p>
+          <p class="card-text">Number of Sensors: {{ location.sensorCount }}</p>
+          <p class="card-text">Sensors: {{ location.sensorTypes }}</p>
         </div>
       </div>
     </div>

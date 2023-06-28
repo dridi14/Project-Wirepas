@@ -12,6 +12,11 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatRadioModule } from '@angular/material/radio';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { TimepickerModule } from 'ngx-bootstrap/timepicker';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import {NgxMaterialTimepickerModule} from 'ngx-material-timepicker';
 
 
 
@@ -25,6 +30,7 @@ import { SignupComponent } from './signup/signup.component';
 import { HttpClientModule } from '@angular/common/http';
 import { AuthenticatedGuard } from './auth.guard';
 import { SensorDetailComponent } from './sensor-detail-component/sensor-detail-component.component';
+
 
 
 @NgModule({
@@ -53,7 +59,12 @@ import { SensorDetailComponent } from './sensor-detail-component/sensor-detail-c
     MatSelectModule,
     MatButtonModule,
     MatRadioModule,
-    HttpClientModule
+    HttpClientModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    TimepickerModule.forRoot(),
+    MatCheckboxModule,
+    NgxMaterialTimepickerModule
   
     
 
