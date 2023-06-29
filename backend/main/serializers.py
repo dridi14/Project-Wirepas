@@ -38,7 +38,7 @@ class SensorDataSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SensorData
-        fields = ['id', 'sensor', 'sink_id', 'source_address', 'tx_time_ms_epoch', 'data', 'event_id']
+        fields = ['id', 'is_active', 'sensor', 'sink_id', 'source_address', 'tx_time_ms_epoch', 'data', 'event_id']
        
     def create(self, validated_data):
       return SensorData.objects.create(**validated_data)
