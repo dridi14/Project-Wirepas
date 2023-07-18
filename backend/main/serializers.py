@@ -42,3 +42,8 @@ class SensorDataSerializer(serializers.ModelSerializer):
        
     def create(self, validated_data):
       return SensorData.objects.create(**validated_data)
+
+class Sensor_dataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SensorData
+        fields = '__all__'

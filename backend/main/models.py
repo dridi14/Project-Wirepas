@@ -28,9 +28,10 @@ class Sensor(models.Model):
 
 class SensorData(models.Model):
     sensor = models.ForeignKey(Sensor, on_delete=models.CASCADE)
-    is_active = models.BooleanField(default=True)  # Indicates if sensor is active or not
+    is_active = models.BooleanField(default=True)
     sink_id = models.CharField(max_length=50, null=True, blank=True) 
     source_address = models.UUIDField()
     tx_time_ms_epoch = models.BigIntegerField()
     data = models.JSONField()  # JSON 
     event_id = models.IntegerField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)

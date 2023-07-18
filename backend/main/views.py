@@ -8,7 +8,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import Room, Sensor, SensorData
-from .serializers import RoomSerializer, SensorSerializer, SensorDataSerializer
+from .serializers import RoomSerializer, SensorSerializer, SensorDataSerializer, Sensor_dataSerializer
 
 
 class CreateUserView(APIView):
@@ -42,3 +42,9 @@ class SensorDataListCreate(generics.ListCreateAPIView):
 class SensorDataRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     queryset = SensorData.objects.all()
     serializer_class = SensorDataSerializer
+
+class SensorDataView(APIView):
+    def get(self, request, sensor_id):
+        sensor_data = SensorData.objects.filter(sensor__sensor_id=sensor_id)
+        serializer = Sensor_dataSerializer(sensor_data, many=True)
+        return Response(serializer.data)
