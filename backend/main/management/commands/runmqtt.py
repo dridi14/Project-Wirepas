@@ -11,6 +11,23 @@ topic = "groupe1/packet/#"
 mqtt_username = os.environ['MQTT_USERNAME']
 mqtt_password = os.environ['MQTT_PASSWORD']
 
+SENSOR_TYPE_BY_ID = {
+    "115": "Movement",
+    "136": "ADC",
+    "112": "Temperature",
+    "114": "Humidity",
+    "116": "Atmospheric Pressure",
+    "118": "Luminosity",
+    "119": "Sound",
+    "128": "Voltage",
+    "131": "CO2",
+    "100": "Passage",
+    "101": "Heater",
+    "102": "AC",
+    "103": "Vent",
+    "104": "Light",
+}
+
 def connect_mqtt():
     client = mqtt_client.Client()
     client.username_pw_set(mqtt_username, mqtt_password)
@@ -41,8 +58,10 @@ def on_message(client, userdata, msg):
     tx_time_ms_epoch = data_json.get('tx_time_ms_epoch')
     sensor_data = data_json.get('data')
     event_id = data_json.get('event_id')
+    sensor_type = SENSOR_TYPE_BY_ID.get(str(sensor_id))
 
-    sensor, _ = Sensor.objects.get_or_create(sensor_id=sensor_id, room=room)
+
+    sensor, _ = Sensor.objects.get_or_create(sensor_id=sensor_id, sensor_type=sensor_type, room=room)
 
     # Create a new SensorData object
     instance = SensorData(sensor=sensor, is_active=True, sink_id=sink_id, source_address=source_address,

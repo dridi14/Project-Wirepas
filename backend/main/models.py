@@ -1,28 +1,28 @@
 from django.db import models
 
 class Room(models.Model):
-    name = models.CharField(max_length=255) # Room name
+    name = models.CharField(max_length=255)
+
+SENSOR_TYPE_BY_ID = {
+    '115': 'Movement',
+    '136': 'ADC',
+    '112': 'Temperature',
+    '114': 'Humidity',
+    '116': 'Atmospheric Pressure',
+    '118': 'Luminosity',
+    '119': 'Sound',
+    '128': 'Voltage',
+    '131': 'CO2',
+    '100': 'Passage',
+    '101': 'Heater',
+    '102': 'AC',
+    '103': 'Vent',
+    '104': 'Light'
+}
 
 class Sensor(models.Model):
-    SENSOR_TYPES = (
-        ('127', 'Accelerometer'),
-        ('115', 'Movement'),
-        ('136', 'Water Leak'),
-        ('112', 'Temperature'),
-        ('114', 'Humidity'),
-        ('116', 'Atmospheric Pressure'),
-        ('118', 'Brightness'),
-        ('119', 'Noise Level'),
-        ('124', 'Shock Detection'),
-        ('125', 'Button Pressed'),
-        ('128', 'Current Measurement'),
-        ('131', 'CO2 Measurement'),
-        ('184', 'Smoke Detection (Gas)'),
-        # Add more if needed
-    )
-
     sensor_id = models.CharField(max_length=10, null=True)
-    sensor_type = models.CharField(max_length=200, null=True)
+    sensor_type = models.CharField(max_length=200, choices=SENSOR_TYPE_BY_ID.items(), null=True)
     room = models.ForeignKey(Room, on_delete=models.CASCADE, null=True)
 
 
