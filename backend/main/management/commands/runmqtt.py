@@ -37,13 +37,12 @@ def connect_mqtt():
     return client
 
 def on_connect(client, userdata, flags, rc):
-    print(f"Connected with result code {rc}")
+    # print(f"Connected with result code {rc}")
     client.subscribe(topic)
-    print(f"Subscribed to {topic}")
+    # print(f"Subscribed to {topic}")
 
 
 def on_message(client, userdata, msg):
-    print("Received message!")
     data = msg.payload.decode()
     data_json = json.loads(data) 
 
@@ -63,11 +62,11 @@ def on_message(client, userdata, msg):
 
     sensor, _ = Sensor.objects.get_or_create(sensor_id=sensor_id, sensor_type=sensor_type, room=room)
 
-    # Create a new SensorData object
+    # Create a SensorData instance
     instance = SensorData(sensor=sensor, is_active=True, sink_id=sink_id, source_address=source_address,
                           tx_time_ms_epoch=tx_time_ms_epoch, data=sensor_data, event_id=event_id)
     instance.save()
-    print(f"Data saved: {data}")
+    # print(f"Data saved: {data}")
 
 class Command(BaseCommand):
     help = 'Run the MQTT client'
