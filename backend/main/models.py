@@ -35,3 +35,9 @@ class SensorData(models.Model):
     data = models.JSONField()  # JSON 
     event_id = models.IntegerField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+class AutomationRule(models.Model):
+    sensor = models.ForeignKey(Sensor, on_delete=models.CASCADE)
+    condition = models.CharField(max_length=255)
+    command = models.CharField(max_length=255)
+    state = models.BooleanField(default=False)

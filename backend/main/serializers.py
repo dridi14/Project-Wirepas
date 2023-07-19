@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Room, Sensor, SensorData
+from .models import Room, Sensor, SensorData, AutomationRule
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -47,3 +47,10 @@ class Sensor_dataSerializer(serializers.ModelSerializer):
     class Meta:
         model = SensorData
         fields = '__all__'
+
+class AutomationRuleSerializer(serializers.ModelSerializer):
+    sensor = SensorSerializer()
+    
+    class Meta:
+        model = AutomationRule
+        fields = ['id', 'sensor', 'condition', 'command', 'state']

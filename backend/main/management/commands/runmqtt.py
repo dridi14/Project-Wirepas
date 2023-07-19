@@ -68,6 +68,30 @@ def on_message(client, userdata, msg):
     instance.save()
     # print(f"Data saved: {data}")
 
+    # Check if any automation rules are triggered
+    rules = AutomationRule.objects.filter(sensor=sensor)
+    data_value = data_json.get('data')
+    for rule in rules:
+        condition_str = f'{data_value} {rule.condition}'
+        if rule.sensor.sensor_id == sensor_id:
+          if eval(condition_str):
+              if not rule.state:
+                  command_to_send = {
+                      "cmd_id": random.randint(1, 1000),
+                      "destination_address": source_address,
+                      "ack_flags": 0,
+                      "cmd_type": rule.command
+                  }
+                  
+                  topic_to_send = f"groupe1/{request}/{room_name}"
+                  client.publish(topic_to_send, json.dumps(command_to_send))
+                  
+                  rule.state = True
+                  rule.save()
+          else:
+              rule.state = False
+              rule.save()
+
 class Command(BaseCommand):
     help = 'Run the MQTT client'
 

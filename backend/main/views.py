@@ -6,8 +6,9 @@ from rest_framework import generics
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .models import Room, Sensor, SensorData
-from .serializers import RoomSerializer, SensorSerializer, SensorDataSerializer, Sensor_dataSerializer
+from rest_framework.exceptions import NotFound
+from .models import Room, Sensor, SensorData, AutomationRule
+from .serializers import RoomSerializer, SensorSerializer, SensorDataSerializer, Sensor_dataSerializer, AutomationRuleSerializer
 from .constants import COMMANDS
 import os
 import json
@@ -127,3 +128,39 @@ class CommandRoomView(APIView):
         else:
             print(f"Failed to send command to topic {mqtt_topic}.")
             return Response({"message": f"Failed to send command to topic {mqtt_topic}."}, status=400)
+
+class AutomationRuleAPI(APIView):
+    def get(self, request, format=None):
+        rules = AutomationRule.objects.all()
+        serializer = AutomationRuleSerializer(rules, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        room_id = request.data.get('room')
+        sensor_id = request.data.get('sensor')
+        command = request.data.get('command')
+        condition = request.data.get('condition')
+
+        try:
+            sensor = Sensor.objects.get(sensor_id=sensor_id, room__id=room_id)
+        except Sensor.DoesNotExist:
+            raise NotFound("Sensor with the given id does not exist.")
+
+        rule = AutomationRule.objects.create(
+            sensor=sensor,
+            command=command,
+            condition=condition,
+            state=False
+        )
+
+        return Response({"message": f"AutomationRule created with id: {rule.id}"}, status=201)
+        
+    def delete(self, request, rule_id):
+        try:
+            rule = AutomationRule.objects.get(id=rule_id)
+        except AutomationRule.DoesNotExist:
+            raise NotFound("AutomationRule with the given id does not exist.")
+
+        rule.delete()
+
+        return Response({"message": f"AutomationRule with id {rule_id} deleted."}, status=status.HTTP_204_NO_CONTENT)
