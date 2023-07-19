@@ -56,7 +56,8 @@ export class AutomationComponent implements OnInit {
       name: ['', Validators.required],
       sensor: ['', Validators.required],
       value: ['', Validators.required],
-      secondValue: ['', Validators.required], // Add the second value control
+      minValue: ['', Validators.required], // Add the minValue control
+      maxValue: ['', Validators.required], // Add the maxValue control
       timeValue: ['', Validators.required], // Add the time value control
       automation: ['', Validators.required],
       automationType: ['more', Validators.required],
@@ -75,24 +76,33 @@ export class AutomationComponent implements OnInit {
       name: ['', Validators.required],
       sensor: ['', Validators.required],
       value: ['', Validators.required],
-      secondValue: ['', Validators.required], // Add the second value control
+      minValue: ['', Validators.required], // Add the minValue control
+      maxValue: ['', Validators.required], // Add the maxValue control
       timeValue: ['', Validators.required], // Add the time value control
       automation: ['', Validators.required],
-      automationType: ['more', Validators.required],
-      room: ['']
+      automationType: ['value', Validators.required],
+      room: [''],
+      sensorParameters: this.formBuilder.group({
+        temperature: [''],
+        humidity: [''],
+        occupation: [''],
+        lightning: ['']
+      }),
       // Add other form controls here
     });
     
   }
 
-  onRoomSelectionChange(selectedRoom: string): void {
+  onRoomSelectionChange(selectedRoom: any): void {
+    
     if (selectedRoom) {
       this.filteredSensors = this.sensors.filter(sensor => sensor.location === selectedRoom);
     } else {
       this.filteredSensors = this.sensors;
     }
-    this.automationForm.get('sensor')?.setValue(''); // Reset sensor selection when room changes
+    this.automationForm.get('sensor')?.setValue(null); // Reset sensor selection when room changes
   }
+  
 
   submitForm(): void {
     if (this.automationForm.valid) {

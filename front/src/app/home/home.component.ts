@@ -40,6 +40,22 @@ export class HomeComponent implements OnInit {
     );
   }
   
+  getRoomName(roomId: number): string {
+    if (roomId === undefined) {
+      return 'Unknown Room';
+    }
+    switch (roomId) {
+      case 1:
+        return 'Room 1';
+      case 2:
+        return 'Room 2';
+      case 3:
+        return 'Room 3';
+      default:
+        return 'Unknown Room';
+    }
+  }
+  
   
 
   viewSensors(room: string) {

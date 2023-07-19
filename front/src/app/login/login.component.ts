@@ -41,7 +41,7 @@ export class LoginComponent implements OnInit {
       const { username, password } = this.loginForm.value;
       const loginData = { username, password };
 
-      this.http.post('accounts/login/', loginData).subscribe(
+      this.http.post('/api/accounts/login/', loginData).subscribe(
         {
           next: (response: any) => {
               this.loginSuccess = true;

@@ -1,85 +1,111 @@
 <div class="container">
-  <mat-card class="card">
-    <mat-card-content>
+  <div class="card">
+    <div class="card-body">
       <form [formGroup]="automationForm" (ngSubmit)="submitForm()">
-        <mat-form-field appearance="fill" class="m-1">
-          <mat-label>Select Automation</mat-label>
-          <mat-select formControlName="automation">
-            <mat-option *ngFor="let automation of automations" [value]="automation.name">{{ automation.name }}</mat-option>
-          </mat-select>
-          <mat-error *ngIf="automationForm.get('automation')?.touched && automationForm.get('automation')?.errors?.required">
+        <div class="form-group mb-3">
+          <label for="automation">Select Automation</label>
+          <select class="form-control  mb-3" id="automation" formControlName="automation">
+            <option *ngFor="let automation of automations" [value]="automation.name">{{ automation.name }}</option>
+          </select>
+          <div class="invalid-feedback" *ngIf="automationForm.get('automation')?.touched && automationForm.get('automation')?.errors?.required">
             Automation selection is required.
-          </mat-error>
-        </mat-form-field>
+          </div>
+        </div>
 
-        <mat-form-field appearance="fill" class="m-1">
-          <mat-label>Select Room</mat-label>
-          <mat-select formControlName="room" (selectionChange)="onRoomSelectionChange($event.value)">
-            <mat-option>None</mat-option>
-            <mat-option *ngFor="let location of locations" [value]="location.name">{{ location.name }}</mat-option>
-          </mat-select>
-          <mat-error *ngIf="automationForm.get('room')?.touched && automationForm.get('room')?.errors?.required">
+        <div class="form-group  mb-3">
+          <label for="room">Select Room</label>
+          <select class="form-control mb-3" id="room" formControlName="room"  (selectionChange)="onRoomSelectionChange($event.target)">
+            <option>None</option>
+            <option *ngFor="let location of locations" [value]="location.name">{{ location.name }}</option>
+          </select>
+          <div class="invalid-feedback" *ngIf="automationForm.get('room')?.touched && automationForm.get('room')?.errors?.required">
             Room selection is required.
-          </mat-error>
-        </mat-form-field>
+          </div>
+        </div>
+        
 
-        <mat-form-field appearance="fill" class="m-1">
-          <mat-label>Select Sensor</mat-label>
-          <mat-select formControlName="sensor">
-            <mat-option *ngFor="let sensor of filteredSensors" [value]="sensor.name">{{ sensor.name }}</mat-option>
-          </mat-select>
-          <mat-error *ngIf="automationForm.get('sensor')?.touched && automationForm.get('sensor')?.errors?.required">
+        <div class="form-group mb-3">
+          <label for="sensor">Select Sensor</label>
+          <select class="form-control mb-3" id="sensor" formControlName="sensor">
+            <option *ngFor="let sensor of filteredSensors" [value]="sensor.name">{{ sensor.name }}</option>
+          </select>
+          <div class="invalid-feedback" *ngIf="automationForm.get('sensor')?.touched && automationForm.get('sensor')?.errors?.required">
             Sensor selection is required.
-          </mat-error>
-        </mat-form-field>
+          </div>
+        </div>
 
-        <div class="radio-container m-1">
-          <span class="choose-automation-text m-2 ">Choose to automate</span>
-          <mat-radio-group formControlName="automationType">
-            <mat-radio-button value="more" class="m-1">More than</mat-radio-button>
-            <mat-radio-button value="less" class="m-1">Less than</mat-radio-button>
-          </mat-radio-group>
+        <div class="form-group mb-3">
+          <span class="choose-automation-text m-2">Choose to automate</span>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" value="range" formControlName="automationType">
+            <label class="form-check-label">Range</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" value="value" formControlName="automationType">
+            <label class="form-check-label">Value</label>
+          </div>
+          <div class="invalid-feedback" *ngIf="automationForm.get('automationType')?.value === 'range' && automationForm.get('minValue')?.touched && automationForm.get('minValue')?.errors?.required">
+            Minimum Value is required.
+          </div>
+          <div class="invalid-feedback" *ngIf="automationForm.get('automationType')?.value === 'range' && automationForm.get('maxValue')?.touched && automationForm.get('maxValue')?.errors?.required">
+            Maximum Value is required.
+          </div>
+          <div class="invalid-feedback" *ngIf="automationForm.get('automationType')?.value === 'value' && automationForm.get('value')?.touched && automationForm.get('value')?.errors?.required">
+            Value is required.
+          </div>
+        </div>
 
-          <mat-form-field appearance="fill" class="m-1">
-            <mat-label>Value</mat-label>
-            <input matInput formControlName="value">
-            <mat-error *ngIf="automationForm.get('value')?.touched && automationForm.get('value')?.errors?.required">
-              Value is required.
-            </mat-error>
-          </mat-form-field>
-
-          <mat-form-field appearance="fill" class="m-1">
-            <mat-label>Second Value</mat-label>
-            <input matInput formControlName="secondValue">
-            <mat-error *ngIf="automationForm.get('secondValue')?.touched && automationForm.get('secondValue')?.errors?.required">
-              Second Value is required.
-            </mat-error>
-          </mat-form-field>
-
-
-          <div class="time-range-container">
-            <div class="timepicker-wrapper">
-              <label class="timepicker-label">Activation</label>
-              <input [ngxTimepicker]="picker1" class="timepicker-input" placeholder="Choose Activation Time">
-              <ngx-material-timepicker #picker1></ngx-material-timepicker>
-            </div>
-            <div class="timepicker-wrapper">
-              <label class="timepicker-label">Deactivation</label>
-              <input [ngxTimepicker]="picker2" class="timepicker-input" placeholder="Choose Deactivation Time">
-              <ngx-material-timepicker #picker2></ngx-material-timepicker>
+        <div formGroupName="sensorParameters">
+          <div class="form-group mb-3">
+            <label for="temperature">Temperature (°C)</label>
+            <input type="number" class="form-control" id="temperature" formControlName="temperature">
+            <div class="invalid-feedback" *ngIf="automationForm.get('sensorParameters.temperature')?.touched && automationForm.get('sensorParameters.temperature')?.errors?.required">
+              Temperature is required.
             </div>
           </div>
-          
-          
-    
 
+          <div class="form-group mb-3">
+            <label for="humidity">Humidity (%)</label>
+            <input type="number" class="form-control" id="humidity" formControlName="humidity">
+            <div class="invalid-feedback" *ngIf="automationForm.get('sensorParameters.humidity')?.touched && automationForm.get('sensorParameters.humidity')?.errors?.required">
+              Humidity is required.
+            </div>
+          </div>
+
+          <div class="form-group mb-3">
+            <label for="occupation">Occupation (Number of People)</label>
+            <input type="number" class="form-control" id="occupation" formControlName="occupation">
+            <div class="invalid-feedback" *ngIf="automationForm.get('sensorParameters.occupation')?.touched && automationForm.get('sensorParameters.occupation')?.errors?.required">
+              Occupation is required.
+            </div>
+          </div>
+
+          <div class="form-group mb-3">
+            <label for="lightning">Lighting (Lux)</label>
+            <input type="number" class="form-control" id="lightning" formControlName="lightning">
+            <div class="invalid-feedback" *ngIf="automationForm.get('sensorParameters.lightning')?.touched && automationForm.get('sensorParameters.lightning')?.errors?.required">
+              Lighting is required.
+            </div>
+          </div>
         </div>
 
-        <div class="button-container">
-          <button mat-raised-button type="submit">Create Automation</button>
+        <div class="time-range-container">
+          <div class="timepicker-wrapper mb-3">
+            <label class="timepicker-label">Activation</label>
+            <input class="form-control" placeholder="Choose Activation Time" [ngxTimepicker]="picker1">
+            <ngx-material-timepicker #picker1></ngx-material-timepicker>
+          </div>
+          <div class="timepicker-wrapper mb-3">
+            <label class="timepicker-label">Deactivation</label>
+            <input class="form-control" placeholder="Choose Deactivation Time" [ngxTimepicker]="picker2">
+            <ngx-material-timepicker #picker2></ngx-material-timepicker>
+          </div>
+        </div>
+
+        <div class="button-container mb-3">
+          <button class="btn btn-outline-primary" type="submit">Create Automation</button>
         </div>
       </form>
-    </mat-card-content>
-  </mat-card>
+    </div>
+  </div>
 </div>
- 

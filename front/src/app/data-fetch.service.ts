@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class DataFetchService {
-  private baseUrl = 'http://localhost:4200/api'; // Replace with your Django backend URL
+  private baseUrl = 'http://localhost:4200/api';
 
   constructor(private http: HttpClient) { }
 
@@ -36,7 +36,7 @@ export class DataFetchService {
   }
 
   getSensorDataById(sensorDataId: number): Observable<any> {
-    const url = `${this.baseUrl}/sensordata/${sensorDataId}/`;
+    const url = `${this.baseUrl}/sensor_data/${sensorDataId}/`;
     return this.http.get<any>(url);
   }
 }

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DataFetchService } from '../data-fetch.service';
 import { take } from 'rxjs/operators';
+import { Chart, ChartConfiguration, ChartScales } from 'chart.js';
 
 interface Sensor {
   id: number;
@@ -12,7 +13,9 @@ interface Sensor {
     name: string;
   };
   data: number[];
+  status: boolean; // Add the status property
 }
+
 
 @Component({
   selector: 'app-sensors',
@@ -20,7 +23,7 @@ interface Sensor {
   styleUrls: ['./sensors.component.css']
 })
 export class SensorsComponent implements OnInit {
-  room: string | null = null;
+  room: any | null = null;
   sensors: Sensor[] = [];
   roomSensors: Sensor[] = [];
 
@@ -46,26 +49,74 @@ export class SensorsComponent implements OnInit {
         this.roomSensors = this.sensors;
       }
       this.roomSensors.forEach(sensor => {
-        this.dataFetchService.getSensorDataById(sensor.id).pipe(take(1)).subscribe(data => {
-          sensor.data = data;
-          this.generateChart(sensor);
+        this.dataFetchService.getSensorDataById(sensor.id).pipe(take(1)).subscribe(response => {
+          const data = response.data;
+          const values = Object.values(data) as number[]; // Cast the array as number[]
+          const canvas = document.getElementById(`chartCanvas${sensor.id}`) as HTMLCanvasElement;
+          this.createChart(canvas, values); // Pass the array values to createChart
         });
       });
     });
   }
-
-  generateChart(sensor: Sensor): void {
-    // Generate chart for the sensor using the sensor data
-    // Update the implementation according to your chart library or requirements
-    console.log(`Generating chart for sensor ${sensor.id}`);
-    console.log('Sensor Data:', sensor.data);
+  
+  
+  
+  
+  createChart(canvas: HTMLCanvasElement, data: number[]): void {
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'],
+          datasets: [
+            {
+              label: 'Sensor Data',
+              data: data,
+              backgroundColor: 'rgba(75, 192, 192, 0.2)',
+              borderColor: 'rgba(75, 192, 192, 1)',
+              borderWidth: 1
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          } as ChartScales,
+        },
+      });
+    }
   }
-
-  getSensorStatus(status: boolean): string {
-    return status ? 'green' : 'red';
-  }
+  
+  
 
   navigateToSensorDetail(sensor: Sensor): void {
     this.router.navigate(['/sensor-detail', sensor.id]);
   }
+
+  getRoomName(roomId: any): string {
+    switch (roomId) {
+      case 1:
+        return 'Room 1';
+      case 2:
+        return 'Room 2';
+      case 3:
+        return 'Room 3';
+      default:
+        return 'Unknown Room';
+    }
+  }
+  
+
+  // getSensorStatus(sensor: Sensor | boolean): string {
+  //   if (typeof sensor === 'boolean') {
+  //     return sensor ? 'green' : 'red';
+  //   }
+  //   // Assuming `sensor` is of type `Sensor` when it's not a boolean
+  //   return sensor.status ? 'green' : 'red';
+  // }
+  
 }
