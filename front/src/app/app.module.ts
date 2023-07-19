@@ -30,6 +30,7 @@ import { SignupComponent } from './signup/signup.component';
 import { HttpClientModule } from '@angular/common/http';
 import { AuthenticatedGuard } from './auth.guard';
 import { SensorDetailComponent } from './sensor-detail-component/sensor-detail-component.component';
+import { AutomationsTableComponent } from './automations-table/automations-table.component';
 
 
 
@@ -41,7 +42,8 @@ import { SensorDetailComponent } from './sensor-detail-component/sensor-detail-c
     AutomationComponent,
     LoginComponent,
     SignupComponent,
-    SensorDetailComponent
+    SensorDetailComponent,
+    AutomationsTableComponent
   ],
   imports: [
     BrowserModule,
@@ -65,8 +67,8 @@ import { SensorDetailComponent } from './sensor-detail-component/sensor-detail-c
     TimepickerModule.forRoot(),
     MatCheckboxModule,
     NgxMaterialTimepickerModule
-  
-    
+
+
 
   ],
   providers: [AuthenticatedGuard],

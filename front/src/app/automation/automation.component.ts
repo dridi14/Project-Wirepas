@@ -1,28 +1,7 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { NgxMaterialTimepickerComponent } from 'ngx-material-timepicker';
-import { DateTime } from 'luxon';
-
-
-interface Sensor {
-  name: string;
-  location: string;
-  type: string;
-  status: boolean;
-  data: number[];
-}
-
-interface Automation {
-  name: string;
-  type: string;
-  status: boolean;
-  activation: string;
-}
-
-interface LocationData {
-  name: string;
-  building: string;
-}
+import { Component, OnInit } from '@angular/core';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { DataFetchService } from '../data-fetch.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-automation',
@@ -30,107 +9,70 @@ interface LocationData {
   styleUrls: ['./automation.component.css']
 })
 export class AutomationComponent implements OnInit {
-  @ViewChild('picker', { static: false }) picker!: any;
-
-
   automationForm: FormGroup;
-  sensors: Sensor[] = [
-    { name: 'Capteur d\'humidité 1', location: 'Cantine', type: 'humidité', status: true, data: [] },
-    { name: 'Capteur de température 1', location: 'Classe1', type: 'température', status: false, data: [] },
-    // Rest of the sensor data...
-  ];
-  automations: Automation[] = [
-    { name: 'Temperature Control', type: 'Climate', status: true, activation: 'Temperature' },
-    { name: 'Lighting Automation', type: 'Lighting', status: false, activation: 'Occupancy' },
-    // Rest of the automation data...
-  ];
-  locations: LocationData[] = [
-    { name: 'Cantine', building: 'Bâtiment A' },
-    { name: 'Classe1', building: 'Bâtiment A' },
-    // Rest of the location data...
-  ];
-  filteredSensors: Sensor[] = [];
+  rooms: any[];
+  sensors: any[];
+  commands: any[];
+  conditions: any[];
 
-  constructor(private formBuilder: FormBuilder) {
-    this.automationForm = this.formBuilder.group({
-      name: ['', Validators.required],
-      sensor: ['', Validators.required],
-      value: ['', Validators.required],
-      minValue: ['', Validators.required], // Add the minValue control
-      maxValue: ['', Validators.required], // Add the maxValue control
-      timeValue: ['', Validators.required], // Add the time value control
-      automation: ['', Validators.required],
-      automationType: ['more', Validators.required],
-      room: ['']
-      // Add other form controls here
+  constructor(private apiService: DataFetchService, private router: Router) {
+    this.automationForm = new FormGroup({
+      room: new FormControl('', Validators.required),
+      sensor: new FormControl('', Validators.required),
+      command: new FormControl('', Validators.required),
+      condition: new FormControl('', Validators.required)
     });
-    
+
+    this.rooms = [];
+    this.sensors = [];
+    this.commands = [];
+    this.conditions = [];
   }
 
-  ngOnInit(): void {
-    this.buildForm();
+  ngOnInit() {
+    // Fetch initial data for rooms, commands, and conditions
+    this.fetchRooms();
+    this.fetchCommands();
   }
 
-  buildForm(): void {
-    this.automationForm = this.formBuilder.group({
-      name: ['', Validators.required],
-      sensor: ['', Validators.required],
-      value: ['', Validators.required],
-      minValue: ['', Validators.required], // Add the minValue control
-      maxValue: ['', Validators.required], // Add the maxValue control
-      timeValue: ['', Validators.required], // Add the time value control
-      automation: ['', Validators.required],
-      automationType: ['value', Validators.required],
-      room: [''],
-      sensorParameters: this.formBuilder.group({
-        temperature: [''],
-        humidity: [''],
-        occupation: [''],
-        lightning: ['']
-      }),
-      // Add other form controls here
+  fetchRooms() {
+    this.apiService.getRooms().subscribe((rooms: string[]) => {
+      this.rooms = rooms;
     });
-    
   }
 
-  onRoomSelectionChange(selectedRoom: any): void {
-    
-    if (selectedRoom) {
-      this.filteredSensors = this.sensors.filter(sensor => sensor.location === selectedRoom);
-    } else {
-      this.filteredSensors = this.sensors;
-    }
-    this.automationForm.get('sensor')?.setValue(null); // Reset sensor selection when room changes
+  fetchCommands() {
+    this.commands = this.apiService.getCommands();
   }
-  
 
-  submitForm(): void {
+  onRoomSelectionChange(select: any) {
+    const selectedRoom = select.value;
+
+    this.apiService.getRoomSensors(selectedRoom).subscribe((sensors: string[]) => {
+      this.sensors = sensors;
+    });
+  }
+
+  submitForm() {
     if (this.automationForm.valid) {
-      const { sensor } = this.automationForm.value;
-
-      // Perform additional processing and validation if needed
-      // Example: Check if the selected sensor exists in the sensor data array
-      const selectedSensor = this.sensors.find(s => s.name === sensor);
-      if (selectedSensor) {
-        // Sensor exists, proceed with saving the automation data
-
-        // TODO: Save the automation data to a database or trigger actions based on the automation
-
-        // Example: Logging the automation data to the console
-        console.log('Automation Data:', this.automationForm.value);
-
-        // Reset form after successful submission
-        this.automationForm.reset();
-      } else {
-        // Selected sensor doesn't exist, handle the error
-        console.error('Selected sensor does not exist');
-      }
-    } else {
-      // Handle form validation errors
-      // Example: Marking the form controls as touched to show validation errors
-      Object.keys(this.automationForm.controls).forEach(key => {
-        this.automationForm.get(key)?.markAsTouched();
+      const formData = this.automationForm.value;
+      this.apiService.createAutomation(formData).subscribe((response: any) => {
+        this.router.navigateByUrl('/automation');
       });
+    } else {
+      console.log(this.automationForm.value);
+      console.error('Form is invalid');
     }
+  }
+
+  onSensorChange(select: any) {
+    const selectedSensor = select.value;
+
+    this.sensors.forEach((sensor: any) => {
+      if (sensor.id === selectedSensor) {
+        this.conditions = sensor.conditions;
+      }
+    });
+
   }
 }

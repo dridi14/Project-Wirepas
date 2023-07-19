@@ -7,6 +7,7 @@ import { LoginComponent } from './login/login.component';
 import { SignupComponent } from './signup/signup.component'; // Import the SignupComponent*
 import { AuthenticatedGuard } from './auth.guard'; // Import the AuthenticatedGuard*
 import { SensorDetailComponent } from './sensor-detail-component/sensor-detail-component.component';
+import { AutomationsTableComponent } from './automations-table/automations-table.component';
 
 
 const routes: Routes = [
@@ -14,10 +15,11 @@ const routes: Routes = [
   { path: 'home', component: HomeComponent, canActivate: [AuthenticatedGuard] },
   { path: 'sensors', component: SensorsComponent, canActivate: [AuthenticatedGuard]},
   { path: 'sensors/:room', component: SensorsComponent, canActivate: [AuthenticatedGuard]},
-  { path: 'automation', component: AutomationComponent, canActivate: [AuthenticatedGuard]},
+  { path: 'automation/add', component: AutomationComponent, canActivate: [AuthenticatedGuard]},
   { path: 'login', component: LoginComponent },
   { path: 'signup', component: SignupComponent },
-  { path: 'sensor-detail/:sensorName', component: SensorDetailComponent } 
+  { path: 'sensor-detail/:sensorName', component: SensorDetailComponent },
+  { path: 'automation', component: AutomationsTableComponent },
   // Add other routes here
 ];
 

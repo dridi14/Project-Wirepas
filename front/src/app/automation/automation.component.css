@@ -1,34 +1,33 @@
 .container {
     display: flex;
     justify-content: center;
-    height: 960px;
     margin-top: 30px;
   }
-  
+
   .card {
     max-width: 900px;
     height: 75%;
     width: 100%;
   }
-  
+
   .button-container {
     display: flex;
     justify-content: flex-end;
     margin-top: 16px;
   }
-  
+
   .time-range-container {
     display: flex;
   }
-  
+
   .timepicker-wrapper {
     margin-right: 30px;
   }
-  
+
   .timepicker-label {
     margin-right: 15px;
   }
-  
+
   .timepicker-input {
     background-color: transparent;
     border: none;
@@ -41,5 +40,4 @@
     font-size: 14px;
     color: #333;
   }
-  
-  
+
