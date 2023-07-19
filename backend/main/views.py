@@ -2,7 +2,7 @@ from .serializers import UserSerializer
 from .serializers import UserSerializer
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from rest_framework import generics
 from rest_framework import status
 from rest_framework.response import Response
@@ -44,7 +44,31 @@ class SensorDataRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = SensorDataSerializer
 
 class SensorDataView(APIView):
+    """
+    get list all sensor data in a sensor.
+    """
     def get(self, request, sensor_id):
-        sensor_data = SensorData.objects.filter(sensor__sensor_id=sensor_id)
+        sensor_data = SensorData.objects.filter(sensor__sensor_id=sensor_id).order_by('-id')[:50]
         serializer = Sensor_dataSerializer(sensor_data, many=True)
+        return Response(serializer.data)
+
+class RoomSensorsView(APIView):
+    """
+    get list all sensors in a room.
+    """
+    def get(self, request, room_id):
+        room = get_object_or_404(Room, id=room_id)
+        sensors = room.sensor_set.all()
+        serializer = SensorSerializer(sensors, many=True)
+        return Response(serializer.data)
+
+class RoomSensorDataView(APIView):
+    """
+    get list all data of a sensor in a room.
+    """
+    def get(self, request, room_id, sensor_id):
+        room = get_object_or_404(Room, id=room_id)
+        sensor = get_object_or_404(Sensor, sensor_id=sensor_id, room=room)
+        sensor_data = sensor.sensordata_set.all().order_by('-id')[:50]
+        serializer = SensorDataSerializer(sensor_data, many=True)
         return Response(serializer.data)
