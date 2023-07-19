@@ -37,7 +37,7 @@ def connect_mqtt():
     return client
 
 def on_connect(client, userdata, flags, rc):
-    # print(f"Connected with result code {rc}")
+    print(f"Connected with result code {rc}")
     client.subscribe(topic)
     # print(f"Subscribed to {topic}")
 

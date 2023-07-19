@@ -1,5 +1,4 @@
 from .serializers import UserSerializer
-from .serializers import UserSerializer
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect, get_object_or_404
@@ -9,6 +8,11 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import Room, Sensor, SensorData
 from .serializers import RoomSerializer, SensorSerializer, SensorDataSerializer, Sensor_dataSerializer
+from .constants import COMMANDS
+import os
+import json
+from paho.mqtt import client as mqtt_client
+import random
 
 
 class CreateUserView(APIView):
@@ -72,3 +76,54 @@ class RoomSensorDataView(APIView):
         sensor_data = sensor.sensordata_set.all().order_by('-id')[:50]
         serializer = SensorDataSerializer(sensor_data, many=True)
         return Response(serializer.data)
+
+class CommandRoomView(APIView):
+    """
+    post a command to a room.
+    """
+    def post(self, request, room_id, format=None):
+        room = get_object_or_404(Room, pk=room_id)
+        gateway_id = room.name 
+        group = 'groupe1'
+        cmd_type = request.data.get('command')
+
+        if not cmd_type:
+            return Response({"error": f"Invalid command.{cmd_type}"}, status=400)
+
+        command_dict = {
+            "cmd_id": random.randint(1, 10000), 
+            "destination_address": room.name,
+            "ack_flags": 0,
+            "cmd_type": cmd_type
+        }
+
+        mqtt_username = os.environ['MQTT_USERNAME']
+        mqtt_password = os.environ['MQTT_PASSWORD']
+        broker = 'mqtt.arcplex.fr'  
+        port = 2295 
+
+        def connect_mqtt() -> mqtt_client:
+            def on_connect(client, userdata, flags, rc):
+                if rc == 0:
+                    print("Connected to MQTT Broker!")
+                else:
+                    print("Failed to connect, return code %d\n", rc)
+
+            client = mqtt_client.Client()
+            client.username_pw_set(mqtt_username, mqtt_password)
+            client.on_connect = on_connect
+            client.connect(broker, port)
+            return client
+
+        client = connect_mqtt()
+        client.loop_start()
+
+        mqtt_topic = f"{group}/request/{gateway_id}"
+        result = client.publish(mqtt_topic, json.dumps(command_dict))
+
+        if result[0] == 0:
+            print(f"Command sent to topic {mqtt_topic}.")
+            return Response({"message": f"Command sent to topic {mqtt_topic}."}, status=200)
+        else:
+            print(f"Failed to send command to topic {mqtt_topic}.")
+            return Response({"message": f"Failed to send command to topic {mqtt_topic}."}, status=400)

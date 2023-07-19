@@ -3,7 +3,7 @@ from django.contrib import admin
 from . import views
 from .views import (RoomListCreate, RoomRetrieveUpdateDestroy, SensorListCreate, 
                     SensorRetrieveUpdateDestroy, SensorDataListCreate, SensorDataRetrieveUpdateDestroy, 
-                    CreateUserView, SensorDataView, RoomSensorsView, RoomSensorDataView)
+                    CreateUserView, SensorDataView, RoomSensorsView, RoomSensorDataView, CommandRoomView)
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -21,5 +21,6 @@ urlpatterns = [
     path('sensordata/<int:pk>/', SensorDataRetrieveUpdateDestroy.as_view()),
     path('sensor_data/<str:sensor_id>/', SensorDataView.as_view()),
     path('room/<int:room_id>/sensors/', RoomSensorsView.as_view(), name='room-sensors'),
-    path('room/<int:room_id>/sensor/<str:sensor_id>/data/', RoomSensorDataView.as_view(), name='room-sensor-data')
+    path('room/<int:room_id>/sensor/<str:sensor_id>/data/', RoomSensorDataView.as_view(), name='room-sensor-data'),
+    path('room/<int:room_id>/command/', CommandRoomView.as_view(), name='room-command')
 ]
