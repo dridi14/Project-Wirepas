@@ -8,6 +8,7 @@ import { SignupComponent } from './signup/signup.component'; // Import the Signu
 import { AuthenticatedGuard } from './auth.guard'; // Import the AuthenticatedGuard*
 import { SensorDetailComponent } from './sensor-detail-component/sensor-detail-component.component';
 import { AutomationsTableComponent } from './automations-table/automations-table.component';
+import { InstantactionComponent } from './instantaction/instantaction.component';
 
 
 const routes: Routes = [
@@ -20,6 +21,7 @@ const routes: Routes = [
   { path: 'signup', component: SignupComponent },
   { path: 'sensor-detail/:sensorName', component: SensorDetailComponent },
   { path: 'automation', component: AutomationsTableComponent },
+  { path: 'instantaction', component: InstantactionComponent },
   // Add other routes here
 ];
 

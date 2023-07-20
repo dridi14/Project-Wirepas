@@ -63,6 +63,7 @@ export class SensorsComponent implements OnInit {
               });
             });
             
+            
             sensor.data = values;
   
             const canvas = document.getElementById(`chartCanvas${sensor.id}`) as HTMLCanvasElement;

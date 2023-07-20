@@ -72,17 +72,12 @@ export class DataFetchService {
     return this.http.get<any>(url);
   }
 
-  getRoomSensors(roomId: number): Observable<any> {
-    const url = `${this.baseUrl}/room/${roomId}/sensors/`;
-    return this.http.get<any>(url);
-  }
-
   getRoomSensorData(roomId: number, sensorId: any): Observable<any> {
     const url = `${this.baseUrl}/room/${roomId}/sensor/${sensorId}/data/`;
     return this.http.get<any>(url);
   }
 
-  sendRoomCommand(roomId: number, command: any): Observable<any> {
+  sendRoomCommand(roomId: number, command: {command: number, sensor_id: number}): Observable<any> {
     const url = `${this.baseUrl}/room/${roomId}/command/`;
     return this.http.post<any>(url, command);
   }
