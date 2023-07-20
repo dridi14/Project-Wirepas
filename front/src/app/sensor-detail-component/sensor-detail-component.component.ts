@@ -36,8 +36,9 @@ export class SensorDetailComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
       const sensorID = params.get('sensorName');
+      const id = params.get('id');
       const sensorRoom = params.get('room');
-      this.apiservice.getRoomSensorData(<any>sensorRoom, sensorID).subscribe((data) => {
+      this.apiservice.getRoomSensorData(<any>sensorRoom, sensorID, id).subscribe((data) => {
         this.sensor = data;
       });
       if (this.sensor) {

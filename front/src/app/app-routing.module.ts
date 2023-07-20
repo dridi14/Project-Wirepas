@@ -19,7 +19,7 @@ const routes: Routes = [
   { path: 'automation/add', component: AutomationComponent, canActivate: [AuthenticatedGuard]},
   { path: 'login', component: LoginComponent },
   { path: 'signup', component: SignupComponent },
-  { path: 'sensor-detail/:sensorName/:room', component: SensorDetailComponent },
+  { path: 'sensor-detail/:sensorName/:room/:id', component: SensorDetailComponent },
   { path: 'automation', component: AutomationsTableComponent },
   { path: 'instantaction', component: InstantactionComponent },
   // Add other routes here

@@ -72,8 +72,8 @@ export class DataFetchService {
     return this.http.get<any>(url);
   }
 
-  getRoomSensorData(roomId: number, sensorId: any): Observable<any> {
-    const url = `${this.baseUrl}/room/${roomId}/sensor/${sensorId}/data/`;
+  getRoomSensorData(roomId: number, sensorId: any, id: any): Observable<any> {
+    const url = `${this.baseUrl}/room/${roomId}/sensor/${sensorId}/data/${id}`;
     return this.http.get<any>(url);
   }
 

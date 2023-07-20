@@ -89,7 +89,7 @@ export class SensorsComponent implements OnInit {
       this.filteredSensors = this.roomSensors;
 
       this.roomSensors.forEach(sensor => {
-        this.dataFetchService.getRoomSensorData(this.roomSensors[0]?.room.id, sensor.sensor_id)
+        this.dataFetchService.getRoomSensorData(this.roomSensors[0]?.room.id, sensor.sensor_id, sensor.id)
           .pipe(take(1))
           .subscribe(dataResponse => {
             const datas = dataResponse;
@@ -198,7 +198,7 @@ export class SensorsComponent implements OnInit {
   }
   navigateToSensorDetail(sensor: Sensor): void {
     console.log(sensor.room.id, 'test');
-    this.router.navigate(['/sensor-detail', sensor.sensor_id, sensor.room.id])
+    this.router.navigate(['/sensor-detail', sensor.sensor_id, sensor.room.id, sensor.id])
   }
 
 }
