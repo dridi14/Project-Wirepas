@@ -1,18 +1,20 @@
+from .constants import COMMANDS
+from .models import Room, Sensor, SensorData, AutomationRule
+from .serializers import RoomSerializer, SensorSerializer, SensorDataSerializer, Sensor_dataSerializer, AutomationRuleSerializer
 from .serializers import UserSerializer
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
+from django.db.models import Count
+from django.db.models.functions import TruncDay
 from django.shortcuts import render, redirect, get_object_or_404
+from paho.mqtt import client as mqtt_client
 from rest_framework import generics
 from rest_framework import status
+from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.exceptions import NotFound
-from .models import Room, Sensor, SensorData, AutomationRule
-from .serializers import RoomSerializer, SensorSerializer, SensorDataSerializer, Sensor_dataSerializer, AutomationRuleSerializer
-from .constants import COMMANDS
-import os
 import json
-from paho.mqtt import client as mqtt_client
+import os
 import random
 
 
@@ -72,9 +74,25 @@ class RoomSensorDataView(APIView):
     get list all data of a sensor in a room.
     """
     def get(self, request, room_id, sensor_id, id):
+        interval = request.query_params.get('interval', None)
         room = get_object_or_404(Room, id=room_id)
         sensor = get_object_or_404(Sensor, sensor_id=sensor_id, room=room, id=id)
-        sensor_data = sensor.sensordata_set.all().order_by('-id')[:50]
+        
+        if interval is None:
+            sensor_data = sensor.sensordata_set.all().order_by('-id')[:50]
+        elif interval == 'hour':
+            sensor_data = sensor.sensordata_set.all().order_by('-id')[:60]  # adjust as needed
+        else:
+            data_per_day = sensor.sensordata_set.annotate(day=TruncDay('created_at')).values('day').annotate(c=Count('id')).values('day', 'c')
+
+            sensor_data = []
+            for data in data_per_day:
+                day_data = sensor.sensordata_set.filter(created_at__date=data['day']).order_by('created_at')
+                
+                data_count = day_data.count()
+                interval = data_count // 10 if data_count > 10 else 1
+                sensor_data.extend(day_data[::interval][:10])
+
         serializer = SensorDataSerializer(sensor_data, many=True)
         return Response(serializer.data)
 
@@ -132,6 +150,9 @@ class CommandRoomView(APIView):
             return Response({"message": f"Failed to send command to topic {mqtt_topic}."}, status=400)
 
 class AutomationRuleAPI(APIView):
+    """
+    get list all automation rules.
+    """
     def get(self, request, format=None):
         rules = AutomationRule.objects.all()
         serializer = AutomationRuleSerializer(rules, many=True)
