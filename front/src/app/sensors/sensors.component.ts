@@ -66,10 +66,11 @@ export class SensorsComponent implements OnInit {
       this.filteredSensors = this.roomSensors;
 
       this.roomSensors.forEach((sensor, i) => {
-        this.dataFetchService.getRoomSensorData(this.roomSensors[0]?.room.id, sensor.sensor_id, sensor.id)
+        this.dataFetchService.getRoomSensorData(sensor.room.id, sensor.sensor_id, sensor.id)
           .pipe(take(1))
           .subscribe(dataResponse => {
             const datas = dataResponse;
+            datas.reverse();
             const sensorValues: any = [];
             const sensorLabels: any = [];
             datas.forEach((data: any) => {
@@ -78,7 +79,6 @@ export class SensorsComponent implements OnInit {
               });
               sensorLabels.push(this.formatTime(data.tx_time_ms_epoch))
             });
-            console.log(this.roomSensors)
             const canvas = document.getElementById(`chartCanvas${sensor.id}`) as HTMLCanvasElement;
             this.roomSensors[i].data = sensorValues;
             this.roomSensors[i]['label'] = sensorLabels;

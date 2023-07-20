@@ -54,12 +54,12 @@ export class InstantactionComponent implements OnInit {
 
   submitForm() {
     if (this.automationForm.valid) {
-      
+
       const formData = this.automationForm.value;
       const roomId = formData.room;
       console.log(formData);
       this.apiService.sendRoomCommand(roomId, formData).subscribe((response: any) => {
-        this.router.navigateByUrl('/automation');
+        this.router.navigateByUrl('/home');
       });
     } else {
       console.log(this.automationForm.value);
