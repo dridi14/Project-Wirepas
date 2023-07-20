@@ -21,7 +21,7 @@ urlpatterns = [
     path('sensordata/<int:pk>/', SensorDataRetrieveUpdateDestroy.as_view()),
     path('sensor_data/<str:sensor_id>/', SensorDataView.as_view()),
     path('room/<int:room_id>/sensors/', RoomSensorsView.as_view(), name='room-sensors'),
-    path('room/<int:room_id>/sensor/<str:sensor_id>/data/', RoomSensorDataView.as_view(), name='room-sensor-data'),
+    path('room/<int:room_id>/sensor/<str:sensor_id>/data/<str:id>', RoomSensorDataView.as_view(), name='room-sensor-data'),
     path('room/<int:room_id>/command/', CommandRoomView.as_view(), name='room-command'),
     path('automation/', AutomationRuleAPI.as_view(), name='automation_rule_api'),
     path('automation/<int:rule_id>/', AutomationRuleAPI.as_view())

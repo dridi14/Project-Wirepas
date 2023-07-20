@@ -71,9 +71,9 @@ class RoomSensorDataView(APIView):
     """
     get list all data of a sensor in a room.
     """
-    def get(self, request, room_id, sensor_id):
+    def get(self, request, room_id, sensor_id, id):
         room = get_object_or_404(Room, id=room_id)
-        sensor = get_object_or_404(Sensor, sensor_id=sensor_id, room=room)
+        sensor = get_object_or_404(Sensor, sensor_id=sensor_id, room=room, id=id)
         sensor_data = sensor.sensordata_set.all().order_by('-id')[:50]
         serializer = SensorDataSerializer(sensor_data, many=True)
         return Response(serializer.data)
