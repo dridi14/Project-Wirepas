@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DataFetchService } from '../data-fetch.service';
-import { take, timestamp } from 'rxjs/operators';
+import { take } from 'rxjs/operators';
 import { Chart, ChartConfiguration, ChartScales } from 'chart.js';
 
 interface Sensor {
@@ -16,7 +16,6 @@ interface Sensor {
   status: boolean; // Add the status property
 }
 
-
 @Component({
   selector: 'app-sensors',
   templateUrl: './sensors.component.html',
@@ -26,6 +25,15 @@ export class SensorsComponent implements OnInit {
   room: string | null = null; // Change the type of room to string | null
   sensors: Sensor[] = [];
   roomSensors: Sensor[] = [];
+  environmentalSensors: Sensor[] = [];
+  motionSensors: Sensor[] = [];
+  soundSensors: Sensor[] = [];
+  lightSensors: Sensor[] = [];
+  hvacSensors: Sensor[] = [];
+  otherSensors: Sensor[] = [];
+  filteredSensors: Sensor[] = [];
+  selectedCategory: string = 'all';
+  values: number[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -38,6 +46,8 @@ export class SensorsComponent implements OnInit {
       this.room = params.get('room');
       this.fetchSensorData();
     });
+    this.filteredSensors = this.roomSensors;
+
   }
 
   fetchSensorData() {
@@ -50,28 +60,50 @@ export class SensorsComponent implements OnInit {
         this.roomSensors = this.sensors;
       }
 
+      // Categorize the sensors
+      this.environmentalSensors = this.roomSensors.filter(sensor =>
+        ['Temperature', 'CO2', 'Atmospheric Pressure', 'Humidity'].includes(sensor.sensor_type)
+      );
+
+      this.motionSensors = this.roomSensors.filter(sensor =>
+        ['PassageMovement', 'Passage'].includes(sensor.sensor_type)
+      );
+
+      this.soundSensors = this.roomSensors.filter(sensor =>
+        ['Sound'].includes(sensor.sensor_type)
+      );
+
+      this.lightSensors = this.roomSensors.filter(sensor =>
+        ['Light'].includes(sensor.sensor_type)
+      );
+
+      this.hvacSensors = this.roomSensors.filter(sensor =>
+        ['Vent', 'AC', 'Heater'].includes(sensor.sensor_type)
+      );
+
+      this.otherSensors = this.roomSensors.filter(sensor =>
+        ['ADC', 'Voltage'].includes(sensor.sensor_type)
+      );
+
+      // Assign the categorized sensors to their respective properties
+      this.filteredSensors = this.roomSensors;
+
       this.roomSensors.forEach(sensor => {
         this.dataFetchService.getRoomSensorData(this.roomSensors[0]?.room.id, sensor.sensor_id)
           .pipe(take(1))
           .subscribe(dataResponse => {
-
-            let datas = dataResponse;
-            const values: number[] = [];
-            const timeStamp: any[] = [];
-            // reverse data
-            datas = datas.reverse();
+            const datas = dataResponse;
             datas.forEach((data: any) => {
               Object.values(data.data).forEach((value: any) => {
-                values.push(value);
+                this.values.push(value);
               });
-              timeStamp.push(data.tx_time_ms_epoch);
             });
 
-
-            sensor.data = values;
+            sensor.data = this.values;
 
             const canvas = document.getElementById(`chartCanvas${sensor.id}`) as HTMLCanvasElement;
-            this.createChart(canvas, values, timeStamp); // Pass the array values to createChart
+            this.createChart(canvas, this.values); // Pass the array values to createChart
+            return
           }, error => {
             console.error(`Error retrieving data for Sensor ${sensor.id}:`, error);
           });
@@ -79,15 +111,17 @@ export class SensorsComponent implements OnInit {
     });
   }
 
-
-  createChart(canvas: HTMLCanvasElement, data: number[], timestamps: any[]): void {
+  createChart(canvas: HTMLCanvasElement, data: number[]): void {
+    if (canvas) {
       const ctx = canvas.getContext('2d');
-      const labels = timestamps.map(timestamp => this.formatTimestamp(timestamp));
-      if(ctx) {
-        new Chart(ctx, {
+      if (ctx) {
+        if ((canvas as any).chart) {
+          (canvas as any).chart.destroy(); // Destroy the previous chart instance
+        }
+        (canvas as any).chart = new Chart(ctx, {
           type: 'line',
           data: {
-            labels: labels,
+            labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'],
             datasets: [
               {
                 label: 'Sensor Data',
@@ -109,37 +143,59 @@ export class SensorsComponent implements OnInit {
         });
       }
     }
-
-  formatTimestamp(timestamp: any): string {
-    const date = new Date(timestamp);
-    return `${date.getHours()}:${date.getMinutes()}`;
   }
 
+
   getRoomName(roomId: any): string {
-      switch(roomId) {
+    switch (roomId) {
       case 1:
-      return 'Room 1';
+        return 'Room 1';
       case 2:
-      return 'Room 2';
+        return 'Room 2';
       case 3:
-      return 'Room 3';
+        return 'Room 3';
       default:
         return 'Unknown Room';
     }
   }
 
 
-  // getSensorStatus(sensor: Sensor | boolean): string {
-  //   if (typeof sensor === 'boolean') {
-  //     return sensor ? 'green' : 'red';
-  //   }
-  //   // Assuming `sensor` is of type `Sensor` when it's not a boolean
-  //   return sensor.status ? 'green' : 'red';
-  // }
+  onCategoryChange(event: any) {
+    this.selectedCategory = event.target.value;
 
-  navigateToSensorDetail(sensor: Sensor): void {
-    console.log(sensor.room.id, 'test');
-    this.router.navigate(['/sensor-detail', sensor.sensor_id, sensor.room.id])
+    switch (this.selectedCategory) {
+      case 'all':
+        this.filteredSensors = this.roomSensors;
+        break;
+      case 'environmental':
+        this.filteredSensors = this.environmentalSensors;
+        break;
+      case 'motion':
+        this.filteredSensors = this.motionSensors;
+        break;
+      case 'sound':
+        this.filteredSensors = this.soundSensors;
+        break;
+      case 'light':
+        this.filteredSensors = this.lightSensors;
+        break;
+      case 'hvac':
+        this.filteredSensors = this.hvacSensors;
+        break;
+      case 'other':
+        this.filteredSensors = this.otherSensors;
+        break;
+      default:
+        this.filteredSensors = [];
+        break;
+    }
+
+    this.filteredSensors.forEach(sensor => {
+      const canvas = document.getElementById(`chartCanvas${sensor.id}`) as HTMLCanvasElement;
+      this.createChart(canvas, this.values); // Pass the sensor's data to createChart
+      console.log(sensor.data)
+    });
   }
+
 
 }
