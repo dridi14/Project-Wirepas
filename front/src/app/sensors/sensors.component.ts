@@ -196,6 +196,9 @@ export class SensorsComponent implements OnInit {
       console.log(sensor.data)
     });
   }
-
+  navigateToSensorDetail(sensor: Sensor): void {
+    console.log(sensor.room.id, 'test');
+    this.router.navigate(['/sensor-detail', sensor.sensor_id, sensor.room.id])
+  }
 
 }
