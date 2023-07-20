@@ -13,6 +13,7 @@ interface Sensor {
     name: string | null; // Change the type of name to string | null
   };
   data: number[];
+  label: string[];
   status: boolean; // Add the status property
 }
 
@@ -34,6 +35,7 @@ export class SensorsComponent implements OnInit {
   filteredSensors: Sensor[] = [];
   selectedCategory: string = 'all';
   values: number[] = [];
+  labels: string[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -60,49 +62,28 @@ export class SensorsComponent implements OnInit {
         this.roomSensors = this.sensors;
       }
 
-      // Categorize the sensors
-      this.environmentalSensors = this.roomSensors.filter(sensor =>
-        ['Temperature', 'CO2', 'Atmospheric Pressure', 'Humidity'].includes(sensor.sensor_type)
-      );
-
-      this.motionSensors = this.roomSensors.filter(sensor =>
-        ['PassageMovement', 'Passage'].includes(sensor.sensor_type)
-      );
-
-      this.soundSensors = this.roomSensors.filter(sensor =>
-        ['Sound'].includes(sensor.sensor_type)
-      );
-
-      this.lightSensors = this.roomSensors.filter(sensor =>
-        ['Light'].includes(sensor.sensor_type)
-      );
-
-      this.hvacSensors = this.roomSensors.filter(sensor =>
-        ['Vent', 'AC', 'Heater'].includes(sensor.sensor_type)
-      );
-
-      this.otherSensors = this.roomSensors.filter(sensor =>
-        ['ADC', 'Voltage'].includes(sensor.sensor_type)
-      );
-
       // Assign the categorized sensors to their respective properties
       this.filteredSensors = this.roomSensors;
 
-      this.roomSensors.forEach(sensor => {
+      this.roomSensors.forEach((sensor, i) => {
         this.dataFetchService.getRoomSensorData(this.roomSensors[0]?.room.id, sensor.sensor_id, sensor.id)
           .pipe(take(1))
           .subscribe(dataResponse => {
             const datas = dataResponse;
+            const sensorValues: any = [];
+            const sensorLabels: any = [];
             datas.forEach((data: any) => {
               Object.values(data.data).forEach((value: any) => {
-                this.values.push(value);
+                sensorValues.push(value);
               });
+              sensorLabels.push(this.formatTime(data.tx_time_ms_epoch))
             });
-
-            sensor.data = this.values;
-
+            console.log(this.roomSensors)
             const canvas = document.getElementById(`chartCanvas${sensor.id}`) as HTMLCanvasElement;
-            this.createChart(canvas, this.values); // Pass the array values to createChart
+            this.roomSensors[i].data = sensorValues;
+            this.roomSensors[i]['label'] = sensorLabels;
+            this.createChart(canvas, sensorValues, sensorLabels); // Pass the array values to createChart
+            this.categorizeSensors();
             return
           }, error => {
             console.error(`Error retrieving data for Sensor ${sensor.id}:`, error);
@@ -111,7 +92,39 @@ export class SensorsComponent implements OnInit {
     });
   }
 
-  createChart(canvas: HTMLCanvasElement, data: number[]): void {
+  categorizeSensors() {
+    // Categorize the sensors
+    this.environmentalSensors = this.roomSensors.filter(sensor =>
+      ['Temperature', 'CO2', 'Atmospheric Pressure', 'Humidity'].includes(sensor.sensor_type)
+    );
+
+    this.motionSensors = this.roomSensors.filter(sensor =>
+      ['PassageMovement', 'Passage'].includes(sensor.sensor_type)
+    );
+
+    this.soundSensors = this.roomSensors.filter(sensor =>
+      ['Sound'].includes(sensor.sensor_type)
+    );
+
+    this.lightSensors = this.roomSensors.filter(sensor =>
+      ['Light'].includes(sensor.sensor_type)
+    );
+
+    this.hvacSensors = this.roomSensors.filter(sensor =>
+      ['Vent', 'AC', 'Heater'].includes(sensor.sensor_type)
+    );
+
+    this.otherSensors = this.roomSensors.filter(sensor =>
+      ['ADC', 'Voltage'].includes(sensor.sensor_type)
+    );
+  }
+
+  formatTime(time: number): string {
+    const date = new Date(time);
+    return `${date.getHours()}:${date.getMinutes()}`;
+  }
+
+  createChart(canvas: HTMLCanvasElement, data: number[], label: string[]): void {
     if (canvas) {
       const ctx = canvas.getContext('2d');
       if (ctx) {
@@ -121,7 +134,7 @@ export class SensorsComponent implements OnInit {
         (canvas as any).chart = new Chart(ctx, {
           type: 'line',
           data: {
-            labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'],
+            labels: label,
             datasets: [
               {
                 label: 'Sensor Data',
@@ -191,13 +204,13 @@ export class SensorsComponent implements OnInit {
     }
 
     this.filteredSensors.forEach(sensor => {
-      const canvas = document.getElementById(`chartCanvas${sensor.id}`) as HTMLCanvasElement;
-      this.createChart(canvas, this.values); // Pass the sensor's data to createChart
-      console.log(sensor.data)
+      setTimeout(()=> {
+        const canvas = document.getElementById(`chartCanvas${sensor.id}`) as HTMLCanvasElement;
+        this.createChart(canvas, sensor.data, sensor.label);
+      }, 200)
     });
   }
   navigateToSensorDetail(sensor: Sensor): void {
-    console.log(sensor.room.id, 'test');
     this.router.navigate(['/sensor-detail', sensor.sensor_id, sensor.room.id, sensor.id])
   }
 
