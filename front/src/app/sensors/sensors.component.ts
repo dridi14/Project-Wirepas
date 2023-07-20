@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DataFetchService } from '../data-fetch.service';
-import { take } from 'rxjs/operators';
+import { take, timestamp } from 'rxjs/operators';
 import { Chart, ChartConfiguration, ChartScales } from 'chart.js';
 
 interface Sensor {
@@ -43,46 +43,51 @@ export class SensorsComponent implements OnInit {
   fetchSensorData() {
     this.dataFetchService.getSensors().pipe(take(1)).subscribe(response => {
       this.sensors = response;
-  
+
       if (this.room) {
         this.roomSensors = this.sensors.filter(sensor => sensor.room.name === this.room);
       } else {
         this.roomSensors = this.sensors;
       }
-  
+
       this.roomSensors.forEach(sensor => {
         this.dataFetchService.getRoomSensorData(this.roomSensors[0]?.room.id, sensor.sensor_id)
           .pipe(take(1))
           .subscribe(dataResponse => {
-    
-            const datas = dataResponse;
+
+            let datas = dataResponse;
             const values: number[] = [];
+            const timeStamp: any[] = [];
+            // reverse data
+            datas = datas.reverse();
             datas.forEach((data: any) => {
               Object.values(data.data).forEach((value: any) => {
                 values.push(value);
               });
+              timeStamp.push(data.tx_time_ms_epoch);
             });
-            
-            
+
+
             sensor.data = values;
-  
+
             const canvas = document.getElementById(`chartCanvas${sensor.id}`) as HTMLCanvasElement;
-            this.createChart(canvas, values); // Pass the array values to createChart
+            this.createChart(canvas, values, timeStamp); // Pass the array values to createChart
           }, error => {
             console.error(`Error retrieving data for Sensor ${sensor.id}:`, error);
           });
       });
     });
   }
-  
-  
-  createChart(canvas: HTMLCanvasElement, data: number[]): void {
+
+
+  createChart(canvas: HTMLCanvasElement, data: number[], timestamps: any[]): void {
       const ctx = canvas.getContext('2d');
+      const labels = timestamps.map(timestamp => this.formatTimestamp(timestamp));
       if(ctx) {
         new Chart(ctx, {
           type: 'line',
           data: {
-            labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'],
+            labels: labels,
             datasets: [
               {
                 label: 'Sensor Data',
@@ -104,8 +109,11 @@ export class SensorsComponent implements OnInit {
         });
       }
     }
-  
 
+  formatTimestamp(timestamp: any): string {
+    const date = new Date(timestamp);
+    return `${date.getHours()}:${date.getMinutes()}`;
+  }
 
   getRoomName(roomId: any): string {
       switch(roomId) {
@@ -128,5 +136,10 @@ export class SensorsComponent implements OnInit {
   //   // Assuming `sensor` is of type `Sensor` when it's not a boolean
   //   return sensor.status ? 'green' : 'red';
   // }
+
+  navigateToSensorDetail(sensor: Sensor): void {
+    console.log(sensor.room.id, 'test');
+    this.router.navigate(['/sensor-detail', sensor.sensor_id, sensor.room.id])
+  }
 
 }

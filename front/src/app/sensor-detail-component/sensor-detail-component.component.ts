@@ -2,6 +2,7 @@
 import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Chart, ChartConfiguration, ChartScales } from 'chart.js';
+import { DataFetchService } from '../data-fetch.service';
 
 interface Sensor {
   name: string;
@@ -30,12 +31,15 @@ export class SensorDetailComponent implements OnInit, AfterViewInit {
 
   @ViewChild('chartCanvas') chartCanvas!: ElementRef;
 
-  constructor(private route: ActivatedRoute) {}
+  constructor(private route: ActivatedRoute, private apiservice: DataFetchService) {}
 
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
-      const sensorName = params.get('sensorName');
-      this.sensor = this.sensors.find((sensor: Sensor) => sensor.name === sensorName);
+      const sensorID = params.get('sensorName');
+      const sensorRoom = params.get('room');
+      this.apiservice.getRoomSensorData(<any>sensorRoom, sensorID).subscribe((data) => {
+        this.sensor = data;
+      });
       if (this.sensor) {
         this.chartData = this.generateChartData(this.sensor, 7);
         this.onTimeRangeChange(this.selectedTimeRange);
@@ -144,27 +148,27 @@ export class SensorDetailComponent implements OnInit, AfterViewInit {
     const data: number[] = [];
     const maxValue = 100; // Maximum value for the generated data
     const minValue = 0; // Minimum value for the generated data
-  
+
     let previousValue = Math.floor(Math.random() * (maxValue - minValue + 1)) + minValue;
     data.push(previousValue);
-  
+
     for (let i = 1; i < numDataPoints; i++) {
       const increment = Math.floor(Math.random() * 6) - 3; // Generates a random increment between -3 and 3
       const newValue = previousValue + increment;
-      
+
       // Ensure the generated value is within the specified range
       const clampedValue = Math.max(minValue, Math.min(maxValue, newValue));
-      
+
       data.push(clampedValue);
       previousValue = clampedValue;
     }
-  
+
     sensor.data = data; // Assign the generated data to the sensor's data property
     return data;
   }
-  
-  
-  
+
+
+
 
   sensors: Sensor[] = [
     { name: 'Capteur d\'humidité 1', location: 'Cantine', type: 'humidité', status: true, data: [] },
