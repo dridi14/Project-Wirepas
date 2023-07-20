@@ -54,11 +54,11 @@ def on_message(client, userdata, msg):
     # Extract fields from your MQTT message
     sensor_id = data_json.get('sensor_id')
     sink_id = data_json.get('sink_id')
-    source_address = data_json.get('source_address')
     tx_time_ms_epoch = data_json.get('tx_time_ms_epoch')
     sensor_data = data_json.get('data')
     event_id = data_json.get('event_id')
     sensor_type = SENSOR_TYPE_BY_ID.get(str(sensor_id))
+    source_address = msg.topic.split('/')[3]
 
 
     sensor, _ = Sensor.objects.get_or_create(sensor_id=sensor_id, sensor_type=sensor_type, room=room, source_address=source_address)

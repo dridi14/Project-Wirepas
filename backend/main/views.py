@@ -84,17 +84,18 @@ class CommandRoomView(APIView):
     """
     def post(self, request, room_id, format=None):
         room = get_object_or_404(Room, pk=room_id)
-        gateway_id = room.name 
+        gateway_id = room.name
         group = 'groupe1'
-        cmd_type = request.data.get('command')
-        sensor = get_object_or_404(room=room, sensor_id=cmd_type)
-
+        cmd_type = int(request.data.get('command'))
+        sensor_id = request.data.get('sensor_id')
+        sensor = get_object_or_404(Sensor, room=room, sensor_id=sensor_id)
+        source = str(sensor.source_address)
         if not cmd_type:
             return Response({"error": f"Invalid command.{cmd_type}"}, status=400)
 
         command_dict = {
             "cmd_id": random.randint(1, 10000), 
-            "destination_address": sensor.source_address,
+            "destination_address": source,
             "ack_flags": 0,
             "cmd_type": cmd_type
         }
