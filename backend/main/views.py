@@ -1,4 +1,5 @@
 from .constants import COMMANDS
+from django.utils import timezone
 from .models import Room, Sensor, SensorData, AutomationRule
 from .serializers import RoomSerializer, SensorSerializer, SensorDataSerializer, Sensor_dataSerializer, AutomationRuleSerializer
 from .serializers import UserSerializer
@@ -71,17 +72,24 @@ class RoomSensorsView(APIView):
 
 class RoomSensorDataView(APIView):
     """
-    get list all data of a sensor in a room.
+    Get a list of all data of a sensor in a room based on the interval.
     """
     def get(self, request, room_id, sensor_id, id):
         interval = request.query_params.get('interval', None)
         room = get_object_or_404(Room, id=room_id)
         sensor = get_object_or_404(Sensor, sensor_id=sensor_id, room=room, id=id)
-        
+
         if interval is None:
-            sensor_data = sensor.sensordata_set.all().order_by('-id')[:50]
+            sensor_data = sensor.sensordata_set.all().order_by('-created_at')[:50]
         elif interval == 'hour':
-            sensor_data = sensor.sensordata_set.all().order_by('-id')[:60]  # adjust as needed
+            sensor_data = sensor.sensordata_set.all().order_by('-created_at')[:20]
+        elif interval == 'day':
+            end_date = timezone.now()
+            start_date = end_date - timezone.timedelta(days=1)
+            sensor_data = sensor.sensordata_set.filter(created_at__range=(start_date, end_date)).order_by('created_at')
+            data_count = sensor_data.count()
+            interval = data_count // 10 if data_count > 10 else 1
+            sensor_data = sensor_data[::interval][:10]
         else:
             data_per_day = sensor.sensordata_set.annotate(day=TruncDay('created_at')).values('day').annotate(c=Count('id')).values('day', 'c')
 
