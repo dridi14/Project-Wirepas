@@ -46,8 +46,45 @@ export class DataFetchService {
   }
 
   getSensorDataById(sensorDataId: number): Observable<any> {
-    const url = `${this.baseUrl}/sensor_data/${sensorDataId}/`;
+    const url = `${this.baseUrl}/sensordata/${sensorDataId}/`;
     return this.http.get<any>(url);
+  }
+
+  // Additional methods
+
+  createNewUser(user: any): Observable<any> {
+    const url = `${this.baseUrl}/accounts/register/`;
+    return this.http.post<any>(url, user);
+  }
+
+  loginUser(credentials: any): Observable<any> {
+    const url = `${this.baseUrl}/accounts/login/`;
+    return this.http.post<any>(url, credentials);
+  }
+
+  refreshToken(token: any): Observable<any> {
+    const url = `${this.baseUrl}/accounts/token/refresh/`;
+    return this.http.post<any>(url, token);
+  }
+
+  getSensorDataBySensorId(sensorId: string): Observable<any> {
+    const url = `${this.baseUrl}/sensor_data/${sensorId}/`;
+    return this.http.get<any>(url);
+  }
+
+  getRoomSensors(roomId: number): Observable<any> {
+    const url = `${this.baseUrl}/room/${roomId}/sensors/`;
+    return this.http.get<any>(url);
+  }
+
+  getRoomSensorData(roomId: number, sensorId: any): Observable<any> {
+    const url = `${this.baseUrl}/room/${roomId}/sensor/${sensorId}/data/`;
+    return this.http.get<any>(url);
+  }
+
+  sendRoomCommand(roomId: number, command: any): Observable<any> {
+    const url = `${this.baseUrl}/room/${roomId}/command/`;
+    return this.http.post<any>(url, command);
   }
 
   getCommands(): any[] {

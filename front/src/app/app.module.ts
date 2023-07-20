@@ -30,6 +30,7 @@ import { SignupComponent } from './signup/signup.component';
 import { HttpClientModule } from '@angular/common/http';
 import { AuthenticatedGuard } from './auth.guard';
 import { SensorDetailComponent } from './sensor-detail-component/sensor-detail-component.component';
+import { InstantactionComponent } from './instantaction/instantaction.component';
 import { AutomationsTableComponent } from './automations-table/automations-table.component';
 
 
@@ -43,6 +44,7 @@ import { AutomationsTableComponent } from './automations-table/automations-table
     LoginComponent,
     SignupComponent,
     SensorDetailComponent,
+    InstantactionComponent,
     AutomationsTableComponent
   ],
   imports: [
