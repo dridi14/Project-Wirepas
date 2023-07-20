@@ -23,6 +23,7 @@ SENSOR_TYPE_BY_ID = {
 class Sensor(models.Model):
     sensor_id = models.CharField(max_length=10, null=True)
     sensor_type = models.CharField(max_length=200, choices=SENSOR_TYPE_BY_ID.items(), null=True)
+    source_address = models.UUIDField()
     room = models.ForeignKey(Room, on_delete=models.CASCADE, null=True)
 
 
@@ -30,7 +31,6 @@ class SensorData(models.Model):
     sensor = models.ForeignKey(Sensor, on_delete=models.CASCADE)
     is_active = models.BooleanField(default=True)
     sink_id = models.CharField(max_length=50, null=True, blank=True) 
-    source_address = models.UUIDField()
     tx_time_ms_epoch = models.BigIntegerField()
     data = models.JSONField()  # JSON 
     event_id = models.IntegerField(null=True, blank=True)

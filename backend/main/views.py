@@ -87,13 +87,14 @@ class CommandRoomView(APIView):
         gateway_id = room.name 
         group = 'groupe1'
         cmd_type = request.data.get('command')
+        sensor = get_object_or_404(room=room, sensor_id=cmd_type)
 
         if not cmd_type:
             return Response({"error": f"Invalid command.{cmd_type}"}, status=400)
 
         command_dict = {
             "cmd_id": random.randint(1, 10000), 
-            "destination_address": room.name,
+            "destination_address": sensor.source_address,
             "ack_flags": 0,
             "cmd_type": cmd_type
         }

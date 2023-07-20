@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from paho.mqtt import client as mqtt_client
 import paho.mqtt.client as mqtt
-from main.models import Sensor, SensorData, Room
+from main.models import Sensor, SensorData, Room, AutomationRule
 import os
 import json
 
@@ -48,6 +48,7 @@ def on_message(client, userdata, msg):
 
     # Extract room from the MQTT topic
     room_name = msg.topic.split('/')[2] 
+
     room, _ = Room.objects.get_or_create(name=room_name)
 
     # Extract fields from your MQTT message
@@ -60,10 +61,10 @@ def on_message(client, userdata, msg):
     sensor_type = SENSOR_TYPE_BY_ID.get(str(sensor_id))
 
 
-    sensor, _ = Sensor.objects.get_or_create(sensor_id=sensor_id, sensor_type=sensor_type, room=room)
+    sensor, _ = Sensor.objects.get_or_create(sensor_id=sensor_id, sensor_type=sensor_type, room=room, source_address=source_address)
 
     # Create a SensorData instance
-    instance = SensorData(sensor=sensor, is_active=True, sink_id=sink_id, source_address=source_address,
+    instance = SensorData(sensor=sensor, is_active=True, sink_id=sink_id,
                           tx_time_ms_epoch=tx_time_ms_epoch, data=sensor_data, event_id=event_id)
     instance.save()
     # print(f"Data saved: {data}")
